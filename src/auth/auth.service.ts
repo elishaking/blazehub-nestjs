@@ -11,6 +11,7 @@ import { SigninDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
+import { getUserIdFromEmail } from './auth.util';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
   async signin(signinDto: SigninDto) {
     const { email, password } = signinDto;
 
-    const userId = email.replace(/\./g, '~').replace(/@/g, '~~');
+    const userId = getUserIdFromEmail(email);
     const userRef = this.dbRef.child('users').child(userId);
 
     const userSnapshot = await userRef.once('value');
