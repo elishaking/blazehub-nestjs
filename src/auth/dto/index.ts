@@ -1,1 +1,1 @@
-export { SigninDto } from './signin.dto';
+export { SigninDto, SigninPayloadDto as SigninResponseDto } from './signin.dto';

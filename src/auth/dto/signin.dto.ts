@@ -7,3 +7,13 @@ export class SigninDto {
     this.password = password;
   }
 }
+
+export class SigninPayloadDto {
+  accessToken: string;
+  user: any;
+
+  constructor(accessToken: string, user: any) {
+    this.accessToken = accessToken;
+    this.user = user;
+  }
+}

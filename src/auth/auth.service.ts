@@ -8,10 +8,15 @@ import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
 import { SigninDto } from './dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './auth.interface';
+import { SigninPayloadDto } from './dto/signin.dto';
 
 @Injectable()
 export class AuthService {
   dbRef = app.database().ref();
+
+  constructor(private jwtService: JwtService) {}
 
   async signin(signinDto: SigninDto) {
     const { email, password } = signinDto;
@@ -41,8 +46,16 @@ export class AuthService {
       throw new UnprocessableEntityException('Incorrect Password');
 
     const username = await this.getUsername(userId);
+    const accessToken = await this.generateAuthToken({
+      email: user.email,
+      username,
+    });
 
-    return user;
+    return new SigninPayloadDto(accessToken, user);
+  }
+
+  private async generateAuthToken(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
   }
 
   private async validatePassword(
@@ -52,13 +65,13 @@ export class AuthService {
     return bycrypt.compare(password, userPassword);
   }
 
-  private async getUsername(
-    userId: string,
-  ): Promise<app.database.DataSnapshot> {
-    return this.dbRef
+  private async getUsername(userId: string): Promise<string> {
+    const usernameSnapshot = await this.dbRef
       .child('profiles')
       .child(userId)
       .child('username')
       .once('value');
+
+    return usernameSnapshot.val();
   }
 }
