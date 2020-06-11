@@ -16,8 +16,8 @@ export class AuthService {
   async signin(signinDto: SigninDto) {
     const { email, password } = signinDto;
 
-    const userKey = email.replace(/\./g, '~').replace(/@/g, '~~');
-    const userRef = this.dbRef.child('users').child(userKey);
+    const userId = email.replace(/\./g, '~').replace(/@/g, '~~');
+    const userRef = this.dbRef.child('users').child(userId);
 
     const userSnapshot = await userRef.once('value');
 
@@ -40,6 +40,8 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnprocessableEntityException('Incorrect Password');
 
+    const username = await this.getUsername(userId);
+
     return user;
   }
 
@@ -48,5 +50,15 @@ export class AuthService {
     userPassword: string,
   ): Promise<boolean> {
     return bycrypt.compare(password, userPassword);
+  }
+
+  private async getUsername(
+    userId: string,
+  ): Promise<app.database.DataSnapshot> {
+    return this.dbRef
+      .child('profiles')
+      .child(userId)
+      .child('username')
+      .once('value');
   }
 }
