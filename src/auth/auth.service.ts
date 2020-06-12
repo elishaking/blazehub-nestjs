@@ -153,6 +153,20 @@ export class AuthService {
     await userSnapshot.ref.child('password').set(hash);
   }
 
+  async sendPasswordResetURL(sendLinkDto: SendLinkDto) {
+    const { email } = sendLinkDto;
+    const userId = getUserIdFromEmail(email);
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .child(userId)
+      .once('value');
+
+    if (!userSnapshot.exists())
+      throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
+
+    // const info = await sendResetURL(userKey, email);
+  }
+
   private async generateAuthToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
