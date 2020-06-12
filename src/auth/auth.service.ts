@@ -9,7 +9,7 @@ import 'firebase/database';
 import * as bycrypt from 'bcrypt';
 import { SigninDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './auth.interface';
+import { JwtPayload, User } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
 
@@ -32,7 +32,7 @@ export class AuthService {
         'Your account does not exist, please sign up',
       );
 
-    const user = userSnapshot.val();
+    const user: User = userSnapshot.val();
 
     // user.confirmed may not exist for earlier users
     if (user.confirmed === false)

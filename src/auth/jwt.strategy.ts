@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import * as app from 'firebase/app';
 import 'firebase/database';
-import { JwtPayload } from './auth.interface';
+import { JwtPayload, User } from './auth.interface';
 import { UnauthorizedException } from '@nestjs/common';
 import { getUserIdFromEmail } from './auth.util';
 
@@ -16,14 +16,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload) {
     const userId = getUserIdFromEmail(payload.email);
-    const user = app
+    const userSnapshot = await app
       .database()
       .ref('users')
       .child(userId)
       .once('value');
 
-    if (!user) throw new UnauthorizedException('Your account was not found');
+    if (!userSnapshot.exists())
+      throw new UnauthorizedException('Your account was not found');
 
+    const user: User = userSnapshot.val();
     return user;
   }
 }
