@@ -44,6 +44,7 @@ export class AuthService {
       gender,
     };
     await userRef.set(newUser);
+    await this.initializeNewUser(userId, username);
 
     return new UserDto(newUser);
   }
@@ -130,5 +131,24 @@ export class AuthService {
     if (userSnapshot.exists()) return username + Date.now().toString();
 
     return username;
+  }
+
+  private async initializeNewUser(userId: string, username: string) {
+    const data = {
+      blazebot: {
+        name: 'BlazeBot',
+      },
+    };
+
+    await this.dbRef
+      .child('friends')
+      .child(userId)
+      .set(data);
+
+    await this.dbRef
+      .child('profiles')
+      .child(userId)
+      .child('username')
+      .set(username);
   }
 }
