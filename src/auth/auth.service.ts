@@ -3,22 +3,50 @@ import {
   NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
+  ConflictException,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
-import { SigninDto } from './dto';
+import { SigninDto, SignupDto, UserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
-import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
   dbRef = app.database().ref();
 
   constructor(private jwtService: JwtService) {}
+
+  async signup(signupDto: SignupDto) {
+    const { email, firstName, lastName, password, gender } = signupDto;
+    const userId = getUserIdFromEmail(email);
+    const userRef = this.dbRef.child('users').child(userId);
+
+    const userSnapshot = await userRef.once('value');
+    if (userSnapshot.exists())
+      throw new ConflictException(
+        'Your account already exists, please sign up',
+      );
+
+    const hashedPassword = await this.generateHashedPassword(password);
+    const username = await this.generateUsername(firstName, lastName);
+
+    const newUser = {
+      email,
+      username,
+      firstName,
+      lastName,
+      password: hashedPassword,
+      confirmed: false,
+      gender,
+    };
+    await userRef.set(newUser);
+
+    return new UserDto(newUser);
+  }
 
   async signin(signinDto: SigninDto) {
     const { email, password } = signinDto;
@@ -62,6 +90,13 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
+  private async generateHashedPassword(password: string) {
+    const salt = await bycrypt.genSalt(10);
+    const hashedPassword = await bycrypt.hash(password, salt);
+
+    return hashedPassword;
+  }
+
   private async validatePassword(
     password: string,
     userPassword: string,
@@ -77,5 +112,23 @@ export class AuthService {
       .once('value');
 
     return usernameSnapshot.val();
+  }
+
+  private async generateUsername(firstName: string, lastName: string) {
+    const username = `${firstName.replace(/ /g, '')}.${lastName.replace(
+      / /g,
+      '',
+    )}`.toLowerCase();
+
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .orderByChild('username')
+      .equalTo(username)
+      .limitToFirst(1)
+      .once('value');
+
+    if (userSnapshot.exists()) return username + Date.now().toString();
+
+    return username;
   }
 }
