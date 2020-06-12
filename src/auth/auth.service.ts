@@ -28,7 +28,7 @@ export class AuthService {
     const userSnapshot = await userRef.once('value');
     if (userSnapshot.exists())
       throw new ConflictException(
-        'Your account already exists, please sign up',
+        'Your account already exists, please sign in',
       );
 
     const hashedPassword = await this.generateHashedPassword(password);
@@ -41,7 +41,7 @@ export class AuthService {
       lastName,
       password: hashedPassword,
       confirmed: false,
-      gender,
+      gender: gender || 'Other',
     };
     await userRef.set(newUser);
     await this.initializeNewUser(userId, username);

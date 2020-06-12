@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail } from 'class-validator';
+import { IsString, IsEmail, IsIn } from 'class-validator';
 
 type GenderType = 'Male' | 'Female' | 'Other';
 
@@ -21,7 +21,7 @@ export class SignupDto {
   readonly password: string;
 
   @ApiProperty()
-  @IsString()
+  @IsIn(['Male', 'Female', 'Other', undefined])
   readonly gender: GenderType;
 
   constructor(
