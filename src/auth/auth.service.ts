@@ -113,6 +113,14 @@ export class AuthService {
     // this.sendConfirmationLink()
   }
 
+  async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
+    const { email } = sendLinkDto;
+    const userId = getUserIdFromEmail(email);
+    await this.fetchUserSnapshot(userId);
+
+    // const info = await sendResetLink(userKey, email);
+  }
+
   async confirmPasswordResetLink(tokenDto: TokenDto) {
     const { token } = tokenDto;
     const userId = await this.validateToken(token);
@@ -126,14 +134,6 @@ export class AuthService {
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const hash = await this.generateHashedPassword(password);
     await userSnapshot.ref.child('password').set(hash);
-  }
-
-  async sendPasswordResetURL(sendLinkDto: SendLinkDto) {
-    const { email } = sendLinkDto;
-    const userId = getUserIdFromEmail(email);
-    await this.fetchUserSnapshot(userId);
-
-    // const info = await sendResetURL(userKey, email);
   }
 
   private async fetchUserSnapshot(userId: string) {

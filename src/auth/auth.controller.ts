@@ -36,4 +36,8 @@ export class AuthController {
   resetPassword(passwordResetDto: PasswordResetDto) {
     return this.authService.resetPassword(passwordResetDto);
   }
+  @Post('/password/forgot')
+  sendPasswordResetLink(sendLinkDto: SendLinkDto) {
+    return this.authService.sendPasswordResetLink(sendLinkDto);
+  }
 }
