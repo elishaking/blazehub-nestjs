@@ -9,9 +9,10 @@ import 'firebase/database';
 import * as bycrypt from 'bcrypt';
 import { SigninDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload, User } from './auth.interface';
+import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -32,7 +33,8 @@ export class AuthService {
         'Your account does not exist, please sign up',
       );
 
-    const user: User = userSnapshot.val();
+    const userValue = userSnapshot.val();
+    const user = new UserDto(userValue);
 
     // user.confirmed may not exist for earlier users
     if (user.confirmed === false)
@@ -40,7 +42,7 @@ export class AuthService {
 
     const isPasswordValid = await this.validatePassword(
       password,
-      user.password,
+      userValue.password,
     );
 
     if (!isPasswordValid)

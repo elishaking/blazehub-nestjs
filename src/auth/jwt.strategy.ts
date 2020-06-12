@@ -2,9 +2,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import * as app from 'firebase/app';
 import 'firebase/database';
-import { JwtPayload, User } from './auth.interface';
+import { JwtPayload } from './auth.interface';
 import { UnauthorizedException } from '@nestjs/common';
 import { getUserIdFromEmail } from './auth.util';
+import { UserDto } from './dto/user.dto';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -25,7 +26,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!userSnapshot.exists())
       throw new UnauthorizedException('Your account was not found');
 
-    const user: User = userSnapshot.val();
-    return user;
+    return new UserDto(userSnapshot.val());
   }
 }

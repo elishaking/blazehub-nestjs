@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail } from 'class-validator';
-import { User } from '../auth.interface';
+import { UserDto } from './user.dto';
 
 export class SigninDto {
   @ApiProperty()
@@ -21,10 +21,10 @@ export class SigninPayloadDto {
   @ApiProperty()
   accessToken: string;
 
-  @ApiProperty()
-  user: User;
+  @ApiProperty({ type: UserDto })
+  user: UserDto;
 
-  constructor(accessToken: string, user: User) {
+  constructor(accessToken: string, user: UserDto) {
     this.accessToken = accessToken;
     this.user = user;
   }
