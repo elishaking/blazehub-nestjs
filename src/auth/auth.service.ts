@@ -124,6 +124,19 @@ export class AuthService {
     // this.sendConfirmationLink()
   }
 
+  async confirmPasswordResetLink(tokenDto: TokenDto) {
+    const { token } = tokenDto;
+    const userId = await this.validateToken(token);
+
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .child(userId)
+      .once('value');
+
+    if (!userSnapshot.exists())
+      throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
+  }
+
   private async generateAuthToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
