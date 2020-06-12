@@ -9,7 +9,7 @@ import {
 import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
-import { SigninDto, SignupDto, UserDto, TokenDto } from './dto';
+import { SigninDto, SignupDto, UserDto, TokenDto, SendLinkDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
@@ -110,6 +110,29 @@ export class AuthService {
       );
 
     userSnapshot.ref.child('confirmed').set(true);
+  }
+
+  async resendConfirmationLink(sendLinkDto: SendLinkDto) {
+    const { email } = sendLinkDto;
+    const userId = getUserIdFromEmail(email);
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .child(userId)
+      .once('value');
+
+    if (!userSnapshot.exists())
+      throw new UnprocessableEntityException(
+        'You have not signed up yet, please sign up',
+      );
+
+    const user = userSnapshot.val();
+    if (user.confirmed)
+      throw new UnprocessableEntityException(
+        'You have already been confirmed, proceed to sign in',
+      );
+
+    // TODO: create method to send confirmation link
+    // this.sendConfirmationLink()
   }
 
   private async generateAuthToken(payload: JwtPayload) {

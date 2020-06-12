@@ -1,6 +1,6 @@
 import { IsEmail } from 'class-validator';
 
-export class SendLink {
+export class SendLinkDto {
   @IsEmail()
   readonly email: string;
 
