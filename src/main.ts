@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import * as helmet from 'helmet';
 import * as firebaseApp from 'firebase/app';
 import { variables, firebaseConfig } from './app/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   firebaseApp.initializeApp(firebaseConfig);
@@ -18,6 +19,7 @@ async function bootstrap() {
       origin: variables.FRONTEND_URL,
     });
   }
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 }
