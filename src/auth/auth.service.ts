@@ -4,11 +4,12 @@ import {
   ForbiddenException,
   UnprocessableEntityException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
-import { SigninDto, SignupDto, UserDto } from './dto';
+import { SigninDto, SignupDto, UserDto, TokenDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
@@ -17,6 +18,7 @@ import { getUserIdFromEmail } from './auth.util';
 @Injectable()
 export class AuthService {
   dbRef = app.database().ref();
+  tokenRef = app.database().ref('tokens');
 
   constructor(private jwtService: JwtService) {}
 
@@ -87,6 +89,29 @@ export class AuthService {
     return new SigninPayloadDto(accessToken, user);
   }
 
+  async confirmUser(tokenDto: TokenDto) {
+    const { token } = tokenDto;
+    const userId = await this.validateToken(token, true);
+
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .child(userId)
+      .once('value');
+
+    if (!userSnapshot.exists())
+      throw new NotFoundException(
+        'Your account does not exist, please sign up',
+      );
+
+    const user = userSnapshot.val();
+    if (user.confirmed)
+      throw new UnprocessableEntityException(
+        'You have already been confirmed, proceed to sign in',
+      );
+
+    userSnapshot.ref.child('confirmed').set(true);
+  }
+
   private async generateAuthToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
@@ -150,5 +175,23 @@ export class AuthService {
       .child(userId)
       .child('username')
       .set(username);
+  }
+
+  private async validateToken(token: string, deleteAfterValidation = false) {
+    const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
+
+    if (!tokenDataSnapshot.exists())
+      throw new BadRequestException('Invalid url');
+
+    const tokenData = tokenDataSnapshot.val();
+    if (tokenData.exp < Date.now()) {
+      tokenDataSnapshot.ref.remove();
+
+      throw new BadRequestException('Expired url');
+    }
+
+    if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
+
+    return tokenData.userID;
   }
 }
