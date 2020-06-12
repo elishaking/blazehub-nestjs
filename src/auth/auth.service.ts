@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
+import { AuthResponse } from 'src/app/constants/service-response';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +30,7 @@ export class AuthService {
 
     const userSnapshot = await userRef.once('value');
     if (userSnapshot.exists())
-      throw new ConflictException(
-        'Your account already exists, please sign in',
-      );
+      throw new ConflictException(AuthResponse.ACCOUNT_CONFLICT);
 
     const hashedPassword = await this.generateHashedPassword(password);
     const username = await this.generateUsername(firstName, lastName);
@@ -60,16 +59,14 @@ export class AuthService {
     const userSnapshot = await userRef.once('value');
 
     if (!userSnapshot.exists())
-      throw new NotFoundException(
-        'Your account does not exist, please sign up',
-      );
+      throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
 
     const userValue = userSnapshot.val();
     const user = new UserDto(userValue);
 
     // user.confirmed may not exist for earlier users
     if (user.confirmed === false)
-      throw new ForbiddenException('Your account has not been verified');
+      throw new ForbiddenException(AuthResponse.NOT_CONFIRMED);
 
     const isPasswordValid = await this.validatePassword(
       password,
@@ -77,7 +74,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid)
-      throw new UnprocessableEntityException('Incorrect Password');
+      throw new UnprocessableEntityException(AuthResponse.INCORRECT_PASSWORD);
 
     const username = await this.getUsername(userId);
     const accessToken = await this.generateAuthToken({
@@ -99,15 +96,11 @@ export class AuthService {
       .once('value');
 
     if (!userSnapshot.exists())
-      throw new NotFoundException(
-        'Your account does not exist, please sign up',
-      );
+      throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
 
     const user = userSnapshot.val();
     if (user.confirmed)
-      throw new UnprocessableEntityException(
-        'You have already been confirmed, proceed to sign in',
-      );
+      throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
     userSnapshot.ref.child('confirmed').set(true);
   }
@@ -121,15 +114,11 @@ export class AuthService {
       .once('value');
 
     if (!userSnapshot.exists())
-      throw new UnprocessableEntityException(
-        'You have not signed up yet, please sign up',
-      );
+      throw new UnprocessableEntityException(AuthResponse.ACCOUNT_NOT_FOUND);
 
     const user = userSnapshot.val();
     if (user.confirmed)
-      throw new UnprocessableEntityException(
-        'You have already been confirmed, proceed to sign in',
-      );
+      throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
     // TODO: create method to send confirmation link
     // this.sendConfirmationLink()
@@ -204,13 +193,13 @@ export class AuthService {
     const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
 
     if (!tokenDataSnapshot.exists())
-      throw new BadRequestException('Invalid url');
+      throw new BadRequestException(AuthResponse.INVALID_LINK);
 
     const tokenData = tokenDataSnapshot.val();
     if (tokenData.exp < Date.now()) {
       tokenDataSnapshot.ref.remove();
 
-      throw new BadRequestException('Expired url');
+      throw new BadRequestException(AuthResponse.EXPIRED_LINK);
     }
 
     if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
