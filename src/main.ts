@@ -15,7 +15,7 @@ async function bootstrap() {
     app.enableCors();
   } else {
     app.enableCors({
-      origin: 'https://blazehub.skyblazar.com/',
+      origin: variables.FRONTEND_URL,
     });
   }
 

@@ -28,6 +28,8 @@ interface Variables {
 
   EMAIL?: string;
   EMAIL_PASSWORD?: string;
+
+  FRONTEND_URL?: string;
 }
 
 export const variables: Variables = {
@@ -54,4 +56,6 @@ export const variables: Variables = {
 
   EMAIL: process.env.EMAIL,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+
+  FRONTEND_URL: process.env.FRONTEND_URL,
 };
