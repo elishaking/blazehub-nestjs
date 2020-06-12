@@ -8,8 +8,14 @@ import { firebaseConfig } from './app/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
   app.use(helmet());
+  if (process.env.NODE_ENV === 'development') {
+    app.enableCors();
+  } else {
+    app.enableCors({
+      origin: 'https://blazehub.skyblazar.com/',
+    });
+  }
 
   firebaseApp.initializeApp(firebaseConfig);
 
