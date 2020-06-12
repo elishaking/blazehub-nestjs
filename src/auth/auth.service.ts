@@ -15,6 +15,7 @@ import { JwtPayload } from './auth.interface';
 import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
 import { AuthResponse } from 'src/app/constants/service-response';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Injectable()
 export class AuthService {
@@ -119,7 +120,8 @@ export class AuthService {
     await this.fetchUserSnapshot(userId);
   }
 
-  async resetPassword(token: string, password: string) {
+  async resetPassword(passwordResetDto: PasswordResetDto) {
+    const { token, password } = passwordResetDto;
     const userId = await this.validateToken(token, true);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const hash = await this.generateHashedPassword(password);
