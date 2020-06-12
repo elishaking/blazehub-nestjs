@@ -137,6 +137,22 @@ export class AuthService {
       throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
   }
 
+  async resetPassword(token: string, password: string) {
+    const userId = await this.validateToken(token, true);
+
+    const userSnapshot = await this.dbRef
+      .child('users')
+      .child(userId)
+      .once('value');
+
+    if (!userSnapshot.exists())
+      throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
+
+    const hash = await this.generateHashedPassword(password);
+
+    await userSnapshot.ref.child('password').set(hash);
+  }
+
   private async generateAuthToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
