@@ -116,7 +116,7 @@ export class AuthService {
     const { token } = tokenDto;
     const userId = await this.validateToken(token);
 
-    const userSnapshot = await this.fetchUserSnapshot(userId);
+    await this.fetchUserSnapshot(userId);
   }
 
   async resetPassword(token: string, password: string) {
@@ -129,7 +129,7 @@ export class AuthService {
   async sendPasswordResetURL(sendLinkDto: SendLinkDto) {
     const { email } = sendLinkDto;
     const userId = getUserIdFromEmail(email);
-    const userSnapshot = await this.fetchUserSnapshot(userId);
+    await this.fetchUserSnapshot(userId);
 
     // const info = await sendResetURL(userKey, email);
   }
