@@ -52,6 +52,7 @@ export class AuthService {
     const accessToken = await this.generateAuthToken({
       email: user.email,
       username,
+      confirmed: user.confirmed,
     });
 
     return new SigninPayloadDto(accessToken, user);
