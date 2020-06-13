@@ -20,6 +20,9 @@ import { variables } from 'src/app/config';
       template: {
         dir: __dirname + '/templates',
         adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
       },
     }),
   ],

@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
   ConflictException,
   BadRequestException,
-  HttpStatus,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
@@ -150,9 +150,9 @@ export class AuthService {
       },
       template: 'password-reset',
     });
-    console.log(info);
 
-    return HttpStatus.OK;
+    if (info?.accepted[0] !== user.email)
+      throw new InternalServerErrorException('Could not send email');
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
