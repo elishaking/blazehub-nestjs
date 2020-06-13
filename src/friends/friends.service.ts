@@ -43,8 +43,9 @@ export class FriendsService {
     return { [friendId]: friend };
   }
 
-  async inviteFriends(data: InviteFriendsDto) {
-    const { emails, firstName, lastName } = data;
+  async inviteFriends(data: InviteFriendsDto, user: UserDto) {
+    const { emails } = data;
+    const { firstName, lastName } = user;
 
     for (let i = 0; i < emails.length; i++) {
       await this.emailService.sendInviteEmail({

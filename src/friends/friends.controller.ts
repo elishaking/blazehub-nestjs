@@ -26,7 +26,10 @@ export class FriendsController {
 
   @UseGuards(AuthGuard())
   @Post('/invite')
-  inviteFriends(@Body() inviteFriendsDto: InviteFriendsDto) {
-    return this.friendsService.inviteFriends(inviteFriendsDto);
+  inviteFriends(
+    @Body() inviteFriendsDto: InviteFriendsDto,
+    @GetUser() user: UserDto,
+  ) {
+    return this.friendsService.inviteFriends(inviteFriendsDto, user);
   }
 }
