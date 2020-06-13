@@ -3,6 +3,7 @@ import * as app from 'firebase/app';
 import 'firebase/database';
 import { CreateFriendDto, InviteFriendsDto } from './dto';
 import { EmailService } from 'src/email/email.service';
+import { UserDto } from 'src/auth/dto';
 
 @Injectable()
 export class FriendsService {
@@ -19,13 +20,14 @@ export class FriendsService {
     return friendsSnapShot.exists() ? friendsSnapShot.val() : [];
   }
 
-  async createFriend(createFriendDto: CreateFriendDto) {
-    const { userId, friendId, friend, name } = createFriendDto;
+  async createFriend(createFriendDto: CreateFriendDto, user: UserDto) {
+    const { friendId, friend } = createFriendDto;
+    const { id, firstName, lastName } = user;
 
     // add new-friend to current-user's friends db
     await this.dbRef
       .child('friends')
-      .child(userId)
+      .child(id)
       .child(friendId)
       .set(friend);
 
@@ -33,9 +35,9 @@ export class FriendsService {
     await this.dbRef
       .child('friends')
       .child(friendId)
-      .child(userId)
+      .child(id)
       .set({
-        name,
+        name: `${firstName} ${lastName}`,
       });
 
     return { [friendId]: friend };

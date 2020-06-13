@@ -5,24 +5,14 @@ import { UserDto } from 'src/auth/dto';
 export class CreateFriendDto {
   @ApiProperty()
   @IsString()
-  readonly userId: string;
-
-  @ApiProperty()
-  @IsString()
   readonly friendId: string;
 
   @ApiProperty({ type: UserDto })
   @IsNotEmpty()
   readonly friend: UserDto;
 
-  @ApiProperty()
-  @IsString()
-  readonly name: string;
-
-  constructor(userId: string, friendId: string, friend: UserDto, name: string) {
-    this.userId = userId;
+  constructor(friendId: string, friend: UserDto) {
     this.friendId = friendId;
     this.friend = friend;
-    this.name = name;
   }
 }

@@ -1,22 +1,27 @@
-import { Controller, Body, Post, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Body, Post, Get, UseGuards } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { CreateFriendDto, InviteFriendsDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { UserDto } from 'src/auth/dto';
 
 @Controller('friends')
 export class FriendsController {
   constructor(private friendsService: FriendsService) {}
 
   @UseGuards(AuthGuard())
-  @Get('/:userId')
-  fetchFriends(@Param('userId') userId: string) {
-    return this.friendsService.fetchFriends(userId);
+  @Get()
+  fetchFriends(@GetUser() user: UserDto) {
+    return this.friendsService.fetchFriends(user.id);
   }
 
   @UseGuards(AuthGuard())
   @Post('/add')
-  createFriend(@Body() createFriendDto: CreateFriendDto) {
-    return this.friendsService.createFriend(createFriendDto);
+  createFriend(
+    @Body() createFriendDto: CreateFriendDto,
+    @GetUser() user: UserDto,
+  ) {
+    return this.friendsService.createFriend(createFriendDto, user);
   }
 
   @UseGuards(AuthGuard())

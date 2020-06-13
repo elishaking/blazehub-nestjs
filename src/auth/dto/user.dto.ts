@@ -3,7 +3,8 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 
 export class UserDto {
   @ApiProperty()
-  readonly id: boolean;
+  @IsString()
+  readonly id: string;
 
   @ApiProperty()
   @IsBoolean()
