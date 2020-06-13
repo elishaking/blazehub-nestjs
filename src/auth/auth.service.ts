@@ -102,7 +102,6 @@ export class AuthService {
       email: user.email,
       username,
       confirmed: user.confirmed,
-      exp: Date.now() + 86400000,
     });
 
     return new SigninPayloadDto(accessToken, user);
