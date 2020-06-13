@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsObject } from 'class-validator';
+import { UserDto } from 'src/auth/dto';
 
 export class CreateFriendDto {
   @ApiProperty()
@@ -10,16 +11,20 @@ export class CreateFriendDto {
   @IsString()
   readonly friendId: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: UserDto })
+  @IsObject({
+    context: UserDto,
+  })
   readonly friend: any;
 
   @ApiProperty()
-  readonly user: any;
+  @IsString()
+  readonly name: string;
 
-  constructor(userId: string, friendId: string, friend: any, user: any) {
+  constructor(userId: string, friendId: string, friend: any, name: string) {
     this.userId = userId;
     this.friendId = friendId;
     this.friend = friend;
-    this.user = user;
+    this.name = name;
   }
 }

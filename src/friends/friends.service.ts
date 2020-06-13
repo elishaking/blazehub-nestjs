@@ -17,7 +17,7 @@ export class FriendsService {
   }
 
   async createFriend(createFriendDto: CreateFriendDto) {
-    const { userId, friendId, friend, user } = createFriendDto;
+    const { userId, friendId, friend, name } = createFriendDto;
 
     // add new-friend to current-user's friends db
     await this.dbRef
@@ -32,7 +32,7 @@ export class FriendsService {
       .child(friendId)
       .child(userId)
       .set({
-        name: `${user.firstName} ${user.lastName}`,
+        name,
       });
 
     return { [friendId]: friend };
