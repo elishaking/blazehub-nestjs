@@ -11,6 +11,11 @@ export class AppController {
     return this.appService.getRoot();
   }
 
+  @Get('/firebase/config')
+  getFirebaseConfig() {
+    return this.appService.getFirebaseConfig();
+  }
+
   @Post('/feedback')
   sendFeedback(@Body() feedbackDto: FeedbackDto) {
     return this.appService.sendFeedback(feedbackDto);

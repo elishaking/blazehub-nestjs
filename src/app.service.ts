@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EmailService } from './email/email.service';
 import { FeedbackMailContext } from './email/email.interface';
-import { variables } from './app/config';
+import { variables, firebaseConfig } from './app/config';
 import { FeedbackDto } from './dto/feedback.dto';
 
 @Injectable()
@@ -26,5 +26,9 @@ export class AppService {
       context,
       template: 'feedback',
     });
+  }
+
+  async getFirebaseConfig() {
+    return firebaseConfig;
   }
 }
