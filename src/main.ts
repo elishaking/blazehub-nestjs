@@ -19,7 +19,17 @@ async function bootstrap() {
       origin: variables.FRONTEND_URL,
     });
   }
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // forbidNonWhitelisted: true,
+      // forbidUnknownValues: true,
+      whitelist: true,
+      transform: true,
+      validationError: {
+        target: false,
+      },
+    }),
+  );
 
   await app.listen(variables.PORT || 8000);
 }
