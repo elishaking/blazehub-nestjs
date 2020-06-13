@@ -23,21 +23,21 @@ export class AuthController {
   }
 
   @Post('/confirm/resend')
-  resendConfirmationLink(sendLinkDto: SendLinkDto) {
+  resendConfirmationLink(@Body() sendLinkDto: SendLinkDto) {
     return this.authService.resendConfirmationLink(sendLinkDto);
   }
 
   @Post('/password/confirm')
-  confirmPasswordResetLink(tokenDto: TokenDto) {
+  confirmPasswordResetLink(@Body() tokenDto: TokenDto) {
     return this.authService.confirmPasswordResetLink(tokenDto);
   }
 
   @Post('/password/reset')
-  resetPassword(passwordResetDto: PasswordResetDto) {
+  resetPassword(@Body() passwordResetDto: PasswordResetDto) {
     return this.authService.resetPassword(passwordResetDto);
   }
   @Post('/password/forgot')
-  sendPasswordResetLink(sendLinkDto: SendLinkDto) {
+  sendPasswordResetLink(@Body() sendLinkDto: SendLinkDto) {
     return this.authService.sendPasswordResetLink(sendLinkDto);
   }
 }
