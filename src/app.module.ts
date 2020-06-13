@@ -4,9 +4,17 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { FriendsModule } from './friends/friends.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [AuthModule, EmailModule, FriendsModule],
+  imports: [
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
+    AuthModule,
+    EmailModule,
+    FriendsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
