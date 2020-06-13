@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
-import { CreateFriendDto } from './dto';
+import { CreateFriendDto, InviteFriendsDto } from './dto';
 import { EmailService } from 'src/email/email.service';
 
 @Injectable()
@@ -41,7 +41,7 @@ export class FriendsService {
     return { [friendId]: friend };
   }
 
-  async inviteFriends(data: any) {
+  async inviteFriends(data: InviteFriendsDto) {
     const { emails, firstName, lastName } = data;
 
     for (let i = 0; i < emails.length; i++) {
