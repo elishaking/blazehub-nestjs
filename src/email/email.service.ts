@@ -4,6 +4,7 @@ import {
   ConfirmationMailData,
   PasswordResetMailData,
   InviteMailData,
+  FeedbackMailData,
 } from './email.interface';
 
 @Injectable()
@@ -29,6 +30,15 @@ export class EmailService {
   }
 
   sendInviteEmail(data: InviteMailData) {
+    return this.mailerService.sendMail({
+      to: data.email,
+      subject: data.subject,
+      template: data.template,
+      context: data.context,
+    });
+  }
+
+  sendFeedbackEmail(data: FeedbackMailData) {
     return this.mailerService.sendMail({
       to: data.email,
       subject: data.subject,

@@ -29,6 +29,7 @@ interface Variables {
   EMAIL_SERVICE?: string;
   EMAIL?: string;
   EMAIL_PASSWORD?: string;
+  FEEDBACK_MAIL?: string;
 
   FRONTEND_URL?: string;
 }
