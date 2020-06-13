@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
+import { FeedbackDto } from './dto/feedback.dto';
 
 @Controller()
 export class AppController {
@@ -8,5 +9,10 @@ export class AppController {
   @Get()
   getRoot(): string {
     return this.appService.getRoot();
+  }
+
+  @Post('/feedback')
+  sendFeedback(@Body() feedbackDto: FeedbackDto) {
+    return this.appService.sendFeedback(feedbackDto);
   }
 }
