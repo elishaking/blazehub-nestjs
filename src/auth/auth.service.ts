@@ -9,6 +9,7 @@ import {
 import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
+import { Chance } from 'chance';
 import { SigninDto, SignupDto, UserDto, TokenDto, SendLinkDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
@@ -16,13 +17,18 @@ import { SigninPayloadDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
 import { AuthResponse } from 'src/app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
+import { EmailService } from 'src/email/email.service';
+import { variables } from 'src/app/config';
 
 @Injectable()
 export class AuthService {
   dbRef = app.database().ref();
   tokenRef = app.database().ref('tokens');
 
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private emailService: EmailService,
+  ) {}
 
   async signup(signupDto: SignupDto) {
     const { email, firstName, lastName, password, gender } = signupDto;
@@ -82,6 +88,18 @@ export class AuthService {
       email: user.email,
       username,
       confirmed: user.confirmed,
+    });
+
+    const confirmationLink = this.generateLink('confirm');
+    this.emailService.sendConfirmationEmail({
+      email: user.email,
+      subject: '',
+      context: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        link: confirmationLink,
+      },
+      template: 'confirmation',
     });
 
     return new SigninPayloadDto(accessToken, user);
@@ -229,5 +247,12 @@ export class AuthService {
     if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
 
     return tokenData.userID;
+  }
+
+  private generateLink(basePath: 'password' | 'confirm') {
+    const chance = new Chance();
+    const token = chance.hash();
+
+    return `${variables.FRONTEND_URL}/${basePath}/${token}`;
   }
 }
