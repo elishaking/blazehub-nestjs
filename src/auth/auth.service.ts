@@ -5,6 +5,7 @@ import {
   UnprocessableEntityException,
   ConflictException,
   BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
@@ -93,13 +94,13 @@ export class AuthService {
     const confirmationLink = this.generateLink('confirm');
     this.emailService.sendConfirmationEmail({
       email: user.email,
-      subject: '',
+      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
       context: {
         firstName: user.firstName,
         lastName: user.lastName,
         link: confirmationLink,
       },
-      template: 'confirmation',
+      template: 'confirm',
     });
 
     return new SigninPayloadDto(accessToken, user);
@@ -134,9 +135,24 @@ export class AuthService {
   async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
     const { email } = sendLinkDto;
     const userId = getUserIdFromEmail(email);
-    await this.fetchUserSnapshot(userId);
+    const userSnapshot = await this.fetchUserSnapshot(userId);
+    const user = userSnapshot.val();
 
-    // const info = await sendResetLink(userKey, email);
+    const resetLink = this.generateLink('password/reset');
+
+    const info = await this.emailService.sendPasswordResetEmail({
+      email,
+      subject: 'BlazeHub: Reset Password 🔑🔑🔑',
+      context: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        link: resetLink,
+      },
+      template: 'password-reset',
+    });
+    console.log(info);
+
+    return HttpStatus.OK;
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
@@ -249,10 +265,10 @@ export class AuthService {
     return tokenData.userID;
   }
 
-  private generateLink(basePath: 'password' | 'confirm') {
+  private generateLink(basePath: 'password/reset' | 'confirm') {
     const chance = new Chance();
     const token = chance.hash();
 
-    return `${variables.FRONTEND_URL}/${basePath}/${token}`;
+    return `${variables.FRONTEND_URL}/auth/${basePath}/${token}`;
   }
 }
