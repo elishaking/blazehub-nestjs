@@ -51,7 +51,7 @@ export class FriendsService {
         context: {
           firstName,
           lastName,
-          link: '',
+          link: 'https://blazehub.skyblazar.com',
         },
         template: 'invite',
       });
