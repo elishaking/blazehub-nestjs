@@ -55,6 +55,19 @@ export class AuthService {
     await userRef.set(newUser);
     await this.initializeNewUser(userId, username);
 
+    const confirmationLink = await this.generateLink('confirm');
+
+    this.emailService.sendConfirmationEmail({
+      email: newUser.email,
+      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
+      context: {
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        link: confirmationLink,
+      },
+      template: 'confirm',
+    });
+
     return new UserDto(newUser);
   }
 
@@ -89,18 +102,6 @@ export class AuthService {
       email: user.email,
       username,
       confirmed: user.confirmed,
-    });
-    const confirmationLink = await this.generateLink('confirm');
-
-    this.emailService.sendConfirmationEmail({
-      email: user.email,
-      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
-      context: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        link: confirmationLink,
-      },
-      template: 'confirm',
     });
 
     return new SigninPayloadDto(accessToken, user);
