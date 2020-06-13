@@ -90,8 +90,8 @@ export class AuthService {
       username,
       confirmed: user.confirmed,
     });
+    const confirmationLink = await this.generateLink('confirm');
 
-    const confirmationLink = this.generateLink('confirm');
     this.emailService.sendConfirmationEmail({
       email: user.email,
       subject: 'BlazeHub: Verify your account 🤗🤗🤗',
@@ -128,8 +128,18 @@ export class AuthService {
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
-    // TODO: create method to send confirmation link
-    // this.sendConfirmationLink()
+    const confirmationLink = await this.generateLink('confirm');
+
+    this.emailService.sendConfirmationEmail({
+      email: user.email,
+      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
+      context: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        link: confirmationLink,
+      },
+      template: 'confirm',
+    });
   }
 
   async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
@@ -137,8 +147,7 @@ export class AuthService {
     const userId = getUserIdFromEmail(email);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const user = userSnapshot.val();
-
-    const resetLink = this.generateLink('password/reset');
+    const resetLink = await this.generateLink('password/reset');
 
     const info = await this.emailService.sendPasswordResetEmail({
       email,
@@ -265,10 +274,17 @@ export class AuthService {
     return tokenData.userID;
   }
 
-  private generateLink(basePath: 'password/reset' | 'confirm') {
+  private async generateLink(basePath: 'password/reset' | 'confirm') {
     const chance = new Chance();
     const token = chance.hash();
 
-    return `${variables.FRONTEND_URL}/auth/${basePath}/${token}`;
+    const tokenData = {
+      token,
+      exp: Date.now() + 60 * 60 * 1000,
+    };
+
+    await this.tokenRef.child(token).set(tokenData);
+
+    return `${variables.FRONTEND_URL}/${basePath}/${token}`;
   }
 }
