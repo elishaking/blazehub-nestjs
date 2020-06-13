@@ -14,7 +14,7 @@ export class FriendsController {
   }
 
   @UseGuards(AuthGuard())
-  @Post('/create')
+  @Post('/add')
   createFriend(@Body() createFriendDto: CreateFriendDto) {
     return this.friendsService.createFriend(createFriendDto);
   }
