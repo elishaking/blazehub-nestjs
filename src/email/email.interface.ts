@@ -30,5 +30,4 @@ export interface InviteMailData extends MailData {
 
 export interface FeedbackMailData extends MailData {
   template: 'feedback';
-  context: {};
 }
