@@ -12,6 +12,7 @@ export class FriendsService {
   constructor(private emailService: EmailService) {}
 
   async fetchPotientialFriends() {
+    // TODO: work on this: create a cloud function to filter users already in current (requesting) user's friend list
     const usersSnapshot = await this.dbRef
       .child('users')
       .limitToLast(30)

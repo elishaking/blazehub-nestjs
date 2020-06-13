@@ -11,14 +11,14 @@ export class FriendsController {
 
   @UseGuards(AuthGuard())
   @Get()
-  fetchPotientialFriends() {
-    return this.friendsService.fetchPotientialFriends();
+  fetchFriends(@GetUser() user: UserDto) {
+    return this.friendsService.fetchFriends(user.id);
   }
 
   @UseGuards(AuthGuard())
-  @Get()
-  fetchFriends(@GetUser() user: UserDto) {
-    return this.friendsService.fetchFriends(user.id);
+  @Get('/new')
+  fetchPotientialFriends() {
+    return this.friendsService.fetchPotientialFriends();
   }
 
   @UseGuards(AuthGuard())
