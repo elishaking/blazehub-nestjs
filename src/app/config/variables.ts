@@ -26,6 +26,7 @@ interface Variables {
   REDIS_CACHE_EXPIRY?: number;
   REDIS_HOST_IP_FAMILY?: number;
 
+  EMAIL_SERVICE?: string;
   EMAIL?: string;
   EMAIL_PASSWORD?: string;
 
@@ -54,6 +55,7 @@ export const variables: Variables = {
   REDIS_CACHE_EXPIRY: parseInt(process.env.REDIS_CACHE_EXPIRY as string),
   REDIS_HOST_IP_FAMILY: parseInt(process.env.REDIS_HOST_IP_FAMILY as string),
 
+  EMAIL_SERVICE: process.env.EMAIL_SERVICE,
   EMAIL: process.env.EMAIL,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
 
