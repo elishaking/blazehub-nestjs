@@ -40,4 +40,21 @@ export class FriendsService {
 
     return { [friendId]: friend };
   }
+
+  async inviteFriends(data: any) {
+    const { emails, firstName, lastName } = data;
+
+    for (let i = 0; i < emails.length; i++) {
+      await this.emailService.sendInviteEmail({
+        email: emails[i],
+        subject: `${firstName} | Hi, Join me on BlazeHub`,
+        context: {
+          firstName,
+          lastName,
+          link: '',
+        },
+        template: 'invite',
+      });
+    }
+  }
 }
