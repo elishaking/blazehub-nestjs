@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ConfirmationMailData, PasswordResetMailData } from './email.interface';
+import {
+  ConfirmationMailData,
+  PasswordResetMailData,
+  InviteMailData,
+} from './email.interface';
 
 @Injectable()
 export class EmailService {
@@ -16,6 +20,15 @@ export class EmailService {
   }
 
   sendPasswordResetEmail(data: PasswordResetMailData) {
+    return this.mailerService.sendMail({
+      to: data.email,
+      subject: data.subject,
+      template: data.template,
+      context: data.context,
+    });
+  }
+
+  sendInviteEmail(data: InviteMailData) {
     return this.mailerService.sendMail({
       to: data.email,
       subject: data.subject,

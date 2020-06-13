@@ -15,3 +15,7 @@ export interface PasswordResetMailData extends MailData {
 export interface ConfirmationMailData extends MailData {
   template: 'confirm';
 }
+
+export interface InviteMailData extends MailData {
+  template: 'invite';
+}

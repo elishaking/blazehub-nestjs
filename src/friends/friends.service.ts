@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
 import { CreateFriendDto } from './dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class FriendsService {
   dbRef = app.database().ref();
+
+  constructor(private emailService: EmailService) {}
 
   async fetchFriends(userId: string) {
     const friendsSnapShot = await this.dbRef
