@@ -11,6 +11,15 @@ export class FriendsService {
 
   constructor(private emailService: EmailService) {}
 
+  async fetchPotientialFriends() {
+    const usersSnapshot = await this.dbRef
+      .child('users')
+      .limitToLast(30)
+      .once('value');
+
+    return usersSnapshot.exists() ? usersSnapshot.val() : [];
+  }
+
   async fetchFriends(userId: string) {
     const friendsSnapShot = await this.dbRef
       .child('friends')
