@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
+import { CreateFriendDto } from './dto';
 
 @Injectable()
 export class FriendsService {
@@ -15,13 +16,13 @@ export class FriendsService {
     return friendsSnapShot.exists() ? friendsSnapShot.val() : [];
   }
 
-  async createFriend(data: any) {
-    const { userid, friendId, friend, user } = data;
+  async createFriend(createFriendDto: CreateFriendDto) {
+    const { userId, friendId, friend, user } = createFriendDto;
 
     // add new-friend to current-user's friends db
     await this.dbRef
       .child('friends')
-      .child(userid)
+      .child(userId)
       .child(friendId)
       .set(friend);
 
@@ -29,7 +30,7 @@ export class FriendsService {
     await this.dbRef
       .child('friends')
       .child(friendId)
-      .child(userid)
+      .child(userId)
       .set({
         name: `${user.firstName} ${user.lastName}`,
       });
