@@ -82,7 +82,10 @@ export class AuthService {
     if (!userSnapshot.exists())
       throw new NotFoundException(AuthResponse.ACCOUNT_NOT_FOUND);
 
-    const userValue = userSnapshot.val();
+    const userValue = {
+      id: userSnapshot.key,
+      ...userSnapshot.val(),
+    };
     const user = new UserDto(userValue);
 
     // user.confirmed may not exist for earlier users

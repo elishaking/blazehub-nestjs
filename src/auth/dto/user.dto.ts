@@ -3,6 +3,9 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 
 export class UserDto {
   @ApiProperty()
+  readonly id: boolean;
+
+  @ApiProperty()
   @IsBoolean()
   readonly confirmed: boolean;
 
@@ -23,6 +26,7 @@ export class UserDto {
   readonly username: string;
 
   constructor(user: any) {
+    this.id = user.id;
     this.confirmed = user.confirmed || false;
     this.email = user.email;
     this.firstName = user.firstName;
