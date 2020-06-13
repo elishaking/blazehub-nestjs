@@ -21,6 +21,6 @@ async function bootstrap() {
   }
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(3000);
+  await app.listen(variables.PORT || 8000);
 }
 bootstrap();
