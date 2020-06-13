@@ -14,7 +14,7 @@ import { Chance } from 'chance';
 import { SigninDto, SignupDto, UserDto, TokenDto, SendLinkDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
-import { SigninPayloadDto } from './dto/signin.dto';
+import { SigninResponseDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
 import { AuthResponse } from 'src/app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
@@ -102,12 +102,15 @@ export class AuthService {
 
     const username = await this.getUsername(userId);
     const accessToken = await this.generateAuthToken({
+      id: user.id,
       email: user.email,
       username,
       confirmed: user.confirmed,
+      firstName: user.firstName,
+      lastName: user.lastName,
     });
 
-    return new SigninPayloadDto(accessToken, user);
+    return new SigninResponseDto(accessToken);
   }
 
   async confirmUser(tokenDto: TokenDto) {
