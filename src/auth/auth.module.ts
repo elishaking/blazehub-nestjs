@@ -15,7 +15,7 @@ import { EmailService } from 'src/email/email.service';
     JwtModule.register({
       secret: variables.JWT_SECRET,
       signOptions: {
-        expiresIn: 3600, // 1 hour
+        expiresIn: 86400, // 1 day
       },
     }),
   ],

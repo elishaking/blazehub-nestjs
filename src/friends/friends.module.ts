@@ -2,15 +2,12 @@ import { Module } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { FriendsController } from './friends.controller';
 import { EmailService } from 'src/email/email.service';
-import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from 'src/auth/jwt.strategy';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [
-    PassportModule.register({
-      defaultStrategy: 'jwt',
-    }),
-  ],
-  providers: [FriendsService, EmailService],
+  imports: [AuthModule],
+  providers: [FriendsService, EmailService, JwtStrategy],
   controllers: [FriendsController],
 })
 export class FriendsModule {}

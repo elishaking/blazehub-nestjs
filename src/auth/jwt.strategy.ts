@@ -26,6 +26,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!userSnapshot.exists())
       throw new UnauthorizedException('Your account was not found');
 
-    return new UserDto(userSnapshot.val());
+    return new UserDto(payload);
   }
 }
