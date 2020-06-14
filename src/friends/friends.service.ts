@@ -60,7 +60,7 @@ export class FriendsService {
     for (let i = 0; i < emails.length; i++) {
       await this.emailService.sendInviteEmail({
         email: emails[i],
-        subject: `${firstName} | Hi, Join me on BlazeHub`,
+        subject: `From ${firstName} | Hi, Join me on BlazeHub`,
         context: {
           firstName,
           lastName,
