@@ -26,6 +26,7 @@
     "@nestjs/core": "^7.0.0",
     "@nestjs/jwt": "^7.0.0",
     "@nestjs/passport": "^7.0.0",
+    "@nestjs/swagger": "^4.5.10",
     "@nestjs/platform-express": "^7.0.0",
     "bcrypt": "^5.0.0",
     "chance": "^1.1.6",
@@ -45,7 +46,6 @@
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
-    "@nestjs/swagger": "^4.5.10",
     "@nestjs/testing": "^7.0.0",
     "@types/bcrypt": "^3.0.0",
     "@types/chance": "^1.1.0",
