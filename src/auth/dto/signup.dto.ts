@@ -21,7 +21,7 @@ export class SignupDto {
   readonly password: string;
 
   @ApiProperty()
-  @IsIn(['Male', 'Female', 'Other', undefined])
+  @IsIn(['Male', 'Female', 'Other'])
   readonly gender: GenderType;
 
   constructor(
