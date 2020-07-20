@@ -124,6 +124,11 @@ export class AuthService {
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
     userSnapshot.ref.child('confirmed').set(true);
+
+    return {
+      success: true,
+      message: 'Your account has been confirmed',
+    };
   }
 
   async resendConfirmationLink(sendLinkDto: SendLinkDto) {

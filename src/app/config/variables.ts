@@ -60,5 +60,8 @@ export const variables: Variables = {
   EMAIL: process.env.EMAIL,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
 
-  FRONTEND_URL: process.env.FRONTEND_URL,
+  FRONTEND_URL:
+    process.env.NODE_ENV === 'development'
+      ? 'localhost:3000'
+      : process.env.FRONTEND_URL,
 };
