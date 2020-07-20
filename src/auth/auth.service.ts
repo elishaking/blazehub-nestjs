@@ -55,7 +55,7 @@ export class AuthService {
     await userRef.set(newUser);
     await this.initializeNewUser(userId, username);
 
-    const confirmationLink = await this.generateLink('confirm');
+    const confirmationLink = await this.generateLink('confirm', userId);
 
     this.emailService.sendConfirmationEmail({
       email: newUser.email,
@@ -135,7 +135,7 @@ export class AuthService {
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
-    const confirmationLink = await this.generateLink('confirm');
+    const confirmationLink = await this.generateLink('confirm', userId);
 
     this.emailService.sendConfirmationEmail({
       email: user.email,
@@ -154,7 +154,7 @@ export class AuthService {
     const userId = getUserIdFromEmail(email);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const user = userSnapshot.val();
-    const resetLink = await this.generateLink('password/reset');
+    const resetLink = await this.generateLink('password/reset', userId);
 
     const info = await this.emailService.sendPasswordResetEmail({
       email,
@@ -175,7 +175,9 @@ export class AuthService {
     const { token } = tokenDto;
     const userId = await this.validateToken(token);
 
-    await this.fetchUserSnapshot(userId);
+    return {
+      success: true,
+    };
   }
 
   async resetPassword(passwordResetDto: PasswordResetDto) {
@@ -278,15 +280,19 @@ export class AuthService {
 
     if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
 
-    return tokenData.userID;
+    return tokenData.userId;
   }
 
-  private async generateLink(basePath: 'password/reset' | 'confirm') {
+  private async generateLink(
+    basePath: 'password/reset' | 'confirm',
+    userId: string,
+  ) {
     const chance = new Chance();
     const token = chance.hash();
 
     const tokenData = {
       token,
+      userId,
       exp: Date.now() + 60 * 60 * 1000,
     };
 
