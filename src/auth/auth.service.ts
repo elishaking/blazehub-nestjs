@@ -89,8 +89,8 @@ export class AuthService {
     const user = new UserDto(userValue);
 
     // user.confirmed may not exist for earlier users
-    // if (user.confirmed === false)
-    //   throw new ForbiddenException(AuthResponse.NOT_CONFIRMED);
+    if (user.confirmed === false)
+      throw new ForbiddenException(AuthResponse.NOT_CONFIRMED);
 
     const isPasswordValid = await this.validatePassword(
       password,

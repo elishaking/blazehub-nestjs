@@ -6,15 +6,15 @@ import { variables } from 'src/app/config';
 @Module({
   imports: [
     MailerModule.forRoot({
+      defaults: {
+        secure: true,
+      },
       transport: {
         service: variables.EMAIL_SERVICE,
         auth: {
           user: variables.EMAIL,
           pass: variables.EMAIL_PASSWORD,
         },
-      },
-      defaults: {
-        from: 'BlazeHub',
       },
       preview: variables.NODE_ENV !== 'production',
       template: {
