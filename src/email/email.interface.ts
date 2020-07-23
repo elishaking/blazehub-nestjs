@@ -13,7 +13,7 @@ export interface FeedbackMailContext {
 interface MailData {
   email: string;
   subject: string;
-  context: MailContext | FeedbackMailContext;
+  context: MailContext;
 }
 
 export interface PasswordResetMailData extends MailData {
@@ -28,6 +28,9 @@ export interface InviteMailData extends MailData {
   template: 'invite';
 }
 
-export interface FeedbackMailData extends MailData {
+export interface FeedbackMailData {
   template: 'feedback';
+  email: string;
+  subject: string;
+  context: FeedbackMailContext;
 }

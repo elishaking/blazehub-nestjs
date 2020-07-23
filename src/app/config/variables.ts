@@ -26,8 +26,9 @@ interface Variables {
   REDIS_CACHE_EXPIRY?: number;
   REDIS_HOST_IP_FAMILY?: number;
 
+  SENDGRID_API_KEY: string;
   EMAIL_SERVICE?: string;
-  EMAIL?: string;
+  EMAIL: string;
   EMAIL_PASSWORD?: string;
   FEEDBACK_MAIL?: string;
 
@@ -56,12 +57,13 @@ export const variables: Variables = {
   REDIS_CACHE_EXPIRY: parseInt(process.env.REDIS_CACHE_EXPIRY as string),
   REDIS_HOST_IP_FAMILY: parseInt(process.env.REDIS_HOST_IP_FAMILY as string),
 
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY || '',
   EMAIL_SERVICE: process.env.EMAIL_SERVICE,
-  EMAIL: process.env.EMAIL,
+  EMAIL: process.env.EMAIL || '',
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
 
   FRONTEND_URL:
     process.env.NODE_ENV === 'development'
-      ? 'localhost:3000'
+      ? 'http://localhost:3000'
       : process.env.FRONTEND_URL,
 };

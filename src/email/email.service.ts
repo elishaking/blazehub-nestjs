@@ -1,49 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 import {
   ConfirmationMailData,
   PasswordResetMailData,
   InviteMailData,
   FeedbackMailData,
 } from './email.interface';
+import { variables } from 'src/app/config';
 
 @Injectable()
 export class EmailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(@InjectSendGrid() private sendGridService: SendGridService) {}
 
   sendConfirmationEmail(data: ConfirmationMailData) {
-    return this.mailerService.sendMail({
+    console.log(data.context.link);
+    return this.sendGridService.send({
+      from: variables.EMAIL,
       to: data.email,
       subject: data.subject,
-      template: data.template,
-      context: data.context,
+      templateId: 'd-87162eaf8190473788f6146f3e4ae524',
+      dynamicTemplateData: {
+        name: `${data.context.firstName} ${data.context.lastName}`,
+        link: data.context.link,
+      },
     });
   }
 
   sendPasswordResetEmail(data: PasswordResetMailData) {
-    return this.mailerService.sendMail({
+    return this.sendGridService.send({
       to: data.email,
       subject: data.subject,
-      template: data.template,
-      context: data.context,
+      dynamicTemplateData: data.context,
     });
   }
 
   sendInviteEmail(data: InviteMailData) {
-    return this.mailerService.sendMail({
+    return this.sendGridService.send({
       to: data.email,
       subject: data.subject,
-      template: data.template,
-      context: data.context,
+      dynamicTemplateData: data.context,
     });
   }
 
   sendFeedbackEmail(data: FeedbackMailData) {
-    return this.mailerService.sendMail({
+    return this.sendGridService.send({
       to: data.email,
       subject: data.subject,
-      template: data.template,
-      context: data.context,
+      dynamicTemplateData: data.context,
     });
   }
 }

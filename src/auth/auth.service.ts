@@ -6,6 +6,7 @@ import {
   ConflictException,
   BadRequestException,
   InternalServerErrorException,
+  HttpStatus,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
@@ -89,8 +90,8 @@ export class AuthService {
     const user = new UserDto(userValue);
 
     // user.confirmed may not exist for earlier users
-    // if (user.confirmed === false)
-    //   throw new ForbiddenException(AuthResponse.NOT_CONFIRMED);
+    if (user.confirmed === false)
+      throw new ForbiddenException(AuthResponse.NOT_CONFIRMED);
 
     const isPasswordValid = await this.validatePassword(
       password,
@@ -142,16 +143,25 @@ export class AuthService {
 
     const confirmationLink = await this.generateLink('confirm', userId);
 
-    this.emailService.sendConfirmationEmail({
-      email: user.email,
-      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
-      context: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        link: confirmationLink,
-      },
-      template: 'confirm',
-    });
+    try {
+      const res = await this.emailService.sendConfirmationEmail({
+        email: user.email,
+        subject: 'BlazeHub: Verify your account 🤗🤗🤗',
+        context: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          link: confirmationLink,
+        },
+        template: 'confirm',
+      });
+      console.log(res[0].body);
+      return HttpStatus.OK;
+    } catch (err) {
+      console.error(JSON.stringify(err));
+      throw new InternalServerErrorException(
+        'Could not send email to the specified address',
+      );
+    }
   }
 
   async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
@@ -172,8 +182,8 @@ export class AuthService {
       template: 'password-reset',
     });
 
-    if (info?.accepted[0] !== user.email)
-      throw new InternalServerErrorException('Could not send email');
+    // if (info?.accepted[0] !== user.email)
+    //   throw new InternalServerErrorException('Could not send email');
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
