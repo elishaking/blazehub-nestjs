@@ -7,3 +7,7 @@ export enum AuthResponse {
   INVALID_LINK = 'Invalid link',
   EXPIRED_LINK = 'Expired link',
 }
+
+export enum EmailResponse {
+  SEND_FAIL = 'Could not send email to the specified address',
+}

@@ -6,7 +6,6 @@ import {
   ConflictException,
   BadRequestException,
   InternalServerErrorException,
-  HttpStatus,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
@@ -17,7 +16,10 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninResponseDto } from './dto/signin.dto';
 import { getUserIdFromEmail } from './auth.util';
-import { AuthResponse } from 'src/app/constants/service-response';
+import {
+  AuthResponse,
+  EmailResponse,
+} from 'src/app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
 import { EmailService } from 'src/email/email.service';
 import { variables } from 'src/app/config';
@@ -58,7 +60,7 @@ export class AuthService {
 
     const confirmationLink = await this.generateLink('confirm', userId);
 
-    this.emailService.sendConfirmationEmail({
+    const res = await this.emailService.sendConfirmationEmail({
       email: newUser.email,
       subject: 'BlazeHub: Verify your account 🤗🤗🤗',
       context: {
@@ -66,8 +68,10 @@ export class AuthService {
         lastName: newUser.lastName,
         link: confirmationLink,
       },
-      template: 'confirm',
     });
+
+    if (res[0].statusCode !== 202)
+      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
 
     return new UserDto(newUser);
   }
@@ -143,25 +147,18 @@ export class AuthService {
 
     const confirmationLink = await this.generateLink('confirm', userId);
 
-    try {
-      const res = await this.emailService.sendConfirmationEmail({
-        email: user.email,
-        subject: 'BlazeHub: Verify your account 🤗🤗🤗',
-        context: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          link: confirmationLink,
-        },
-        template: 'confirm',
-      });
-      console.log(res[0].body);
-      return HttpStatus.OK;
-    } catch (err) {
-      console.error(JSON.stringify(err));
-      throw new InternalServerErrorException(
-        'Could not send email to the specified address',
-      );
-    }
+    const res = await this.emailService.sendConfirmationEmail({
+      email: user.email,
+      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
+      context: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        link: confirmationLink,
+      },
+    });
+
+    if (res[0].statusCode !== 202)
+      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
   async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
@@ -171,7 +168,7 @@ export class AuthService {
     const user = userSnapshot.val();
     const resetLink = await this.generateLink('password/reset', userId);
 
-    const info = await this.emailService.sendPasswordResetEmail({
+    const res = await this.emailService.sendPasswordResetEmail({
       email,
       subject: 'BlazeHub: Reset Password 🔑🔑🔑',
       context: {
@@ -179,11 +176,10 @@ export class AuthService {
         lastName: user.lastName,
         link: resetLink,
       },
-      template: 'password-reset',
     });
 
-    // if (info?.accepted[0] !== user.email)
-    //   throw new InternalServerErrorException('Could not send email');
+    if (res[0].statusCode !== 202)
+      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
@@ -192,6 +188,7 @@ export class AuthService {
 
     return {
       success: true,
+      id: userId,
     };
   }
 

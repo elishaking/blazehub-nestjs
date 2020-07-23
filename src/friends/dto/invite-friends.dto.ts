@@ -1,12 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 
+interface Email {
+  email: string;
+  name: string;
+}
+
 export class InviteFriendsDto {
   @ApiProperty()
   @IsArray()
-  readonly emails: string[];
+  readonly mails: Email[];
 
-  constructor(emails: string[]) {
-    this.emails = emails;
+  constructor(mails: Email[]) {
+    this.mails = mails;
   }
 }

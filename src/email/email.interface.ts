@@ -10,26 +10,26 @@ export interface FeedbackMailContext {
   email: string;
 }
 
-interface MailData {
+interface InviteMailContext {
+  firstName: string;
+  lastName: string;
+  receiver: string;
+  link: string;
+}
+
+export interface MailData {
   email: string;
   subject: string;
   context: MailContext;
 }
 
-export interface PasswordResetMailData extends MailData {
-  template: 'password-reset';
-}
-
-export interface ConfirmationMailData extends MailData {
-  template: 'confirm';
-}
-
-export interface InviteMailData extends MailData {
-  template: 'invite';
+export interface InviteMailData {
+  email: string;
+  subject: string;
+  context: InviteMailContext;
 }
 
 export interface FeedbackMailData {
-  template: 'feedback';
   email: string;
   subject: string;
   context: FeedbackMailContext;

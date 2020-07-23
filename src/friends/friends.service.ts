@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
 import { CreateFriendDto, InviteFriendsDto } from './dto';
@@ -54,20 +54,32 @@ export class FriendsService {
   }
 
   async inviteFriends(data: InviteFriendsDto, user: UserDto) {
-    const { emails } = data;
+    const { mails } = data;
     const { firstName, lastName } = user;
+    const errors = [];
 
-    for (let i = 0; i < emails.length; i++) {
-      await this.emailService.sendInviteEmail({
-        email: emails[i],
-        subject: `From ${firstName} | Hi, Join me on BlazeHub`,
-        context: {
-          firstName,
-          lastName,
-          link: 'https://blazehub.skyblazar.com',
-        },
-        template: 'invite',
-      });
+    for (let i = 0; i < mails.length; i++) {
+      try {
+        await this.emailService.sendInviteEmail({
+          email: mails[i].email,
+          subject: `From ${firstName} | Hi, Join me on BlazeHub`,
+          context: {
+            firstName,
+            lastName,
+            link: 'https://blazehub.skyblazar.com',
+            receiver: mails[i].name,
+          },
+        });
+      } catch (err) {
+        errors.push({
+          index: i,
+          err,
+        });
+      }
     }
+    // TODO: log error
+
+    if (errors.length > 0)
+      throw new InternalServerErrorException(errors.map(e => e.index));
   }
 }

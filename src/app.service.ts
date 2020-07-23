@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EmailService } from './email/email.service';
 import { FeedbackMailContext } from './email/email.interface';
 import { variables, firebaseConfig } from './app/config';
 import { FeedbackDto } from './dto/feedback.dto';
+import { EmailResponse } from './app/constants/service-response';
 
 @Injectable()
 export class AppService {
@@ -20,12 +21,18 @@ export class AppService {
       email,
     };
 
-    await this.emailService.sendFeedbackEmail({
-      email: variables.FEEDBACK_MAIL as string,
-      subject: 'BlazeHub | Feedback mail',
-      context,
-      template: 'feedback',
-    });
+    try {
+      const res = await this.emailService.sendFeedbackEmail({
+        email: variables.FEEDBACK_MAIL as string,
+        subject: 'BlazeHub | Feedback mail',
+        context,
+      });
+
+      if (res[0].statusCode !== 202)
+        throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
+    } catch (err) {
+      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
+    }
   }
 
   async getFirebaseConfig() {

@@ -61,6 +61,7 @@ export const variables: Variables = {
   EMAIL_SERVICE: process.env.EMAIL_SERVICE,
   EMAIL: process.env.EMAIL || '',
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  FEEDBACK_MAIL: process.env.FEEDBACK_MAIL,
 
   FRONTEND_URL:
     process.env.NODE_ENV === 'development'
