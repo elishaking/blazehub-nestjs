@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import * as bycrypt from 'bcrypt';
+
+import { PasswordError } from 'src/app/constants/service-response';
 
 @Injectable()
 export class PasswordService {
@@ -10,10 +12,8 @@ export class PasswordService {
     return hashedPassword;
   }
 
-  async validatePassword(
-    password: string,
-    encrypted: string,
-  ): Promise<boolean> {
-    return bycrypt.compare(password, encrypted);
+  async validatePassword(password: string, encrypted: string) {
+    const isPasswordValid = await bycrypt.compare(password, encrypted);
+    if (!isPasswordValid) throw new ForbiddenException(PasswordError.INCORRECT);
   }
 }

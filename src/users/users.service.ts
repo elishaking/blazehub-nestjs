@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
 
@@ -16,6 +20,7 @@ export class UsersService {
     const userSnapshot = await userRef.once('value');
     if (userSnapshot.exists()) throw new ConflictException(UserError.CONFLICT);
 
+    // TODO: (migration): add username to all existing users
     const { firstName, lastName } = signupDto;
     const username = await this.generateUsername(firstName, lastName);
     const newUser = {
@@ -30,6 +35,17 @@ export class UsersService {
     // TODO: initializeNewUser
 
     return newUser;
+  }
+
+  async findByEmail(email: string): Promise<IUser> {
+    const userId = this.generateUserId(email);
+    const userRef = this.usersRef.child(userId);
+    const userSnapshot = await userRef.once('value');
+
+    if (!userSnapshot.exists())
+      throw new NotFoundException(UserError.NOT_FOUND);
+
+    return userSnapshot.val();
   }
 
   private generateUserId(email: string): string {

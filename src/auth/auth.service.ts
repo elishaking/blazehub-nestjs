@@ -17,6 +17,7 @@ import { PasswordResetDto } from './dto/password-reset.dto';
 import { UsersService } from 'src/users/users.service';
 import { TokenUrlService } from './token-url.service';
 import { PasswordService } from './password.service';
+import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,13 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const user = await this.userService.create(signupDto);
+    const encryptedPassword = await this.passwordService.encryptPassword(
+      signupDto.password,
+    );
+    const user = await this.userService.create({
+      ...signupDto,
+      password: encryptedPassword,
+    });
     const res = await this.tokenUrlService.sendConfirmationUrl(user);
 
     // TODO: remove this
@@ -43,40 +50,13 @@ export class AuthService {
   async signin(signinDto: SigninDto) {
     const { email, password } = signinDto;
 
-    const userId = getUserIdFromEmail(email);
-    const userRef = this.dbRef.child('users').child(userId);
-
-    const userSnapshot = await userRef.once('value');
-
-    if (!userSnapshot.exists())
-      throw new NotFoundException(AuthError.ACCOUNT_NOT_FOUND);
-
-    const userValue = {
-      id: userSnapshot.key,
-      ...userSnapshot.val(),
-    };
-    const user = new UserDto(userValue);
-
+    const user = await this.userService.findByEmail(email);
     // user.confirmed may not exist for earlier users
     if (user.confirmed === false)
       throw new ForbiddenException(AuthError.NOT_CONFIRMED);
 
-    const isPasswordValid = await this.passwordService.validatePassword(
-      password,
-      userValue.password,
-    );
-    if (!isPasswordValid)
-      throw new ForbiddenException(AuthError.INCORRECT_PASSWORD);
-
-    const username = await this.getUsername(userId);
-    const accessToken = await this.generateAuthToken({
-      id: user.id,
-      email: user.email,
-      username,
-      confirmed: user.confirmed,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    });
+    await this.passwordService.validatePassword(password, user.password);
+    const accessToken = this.generateAccessToken(user);
 
     return new SigninResponseDto(accessToken);
   }
@@ -153,7 +133,16 @@ export class AuthService {
     return userSnapshot;
   }
 
-  private async generateAuthToken(payload: JwtPayload) {
+  private generateAccessToken(user: IUser) {
+    const payload: JwtPayload = {
+      id: user.id,
+      email: user.email,
+      confirmed: user.confirmed,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+    };
+
     return this.jwtService.sign(payload);
   }
 
