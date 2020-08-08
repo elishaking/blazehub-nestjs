@@ -9,7 +9,6 @@ import {
 import * as app from 'firebase/app';
 import 'firebase/database';
 import * as bycrypt from 'bcrypt';
-import { Chance } from 'chance';
 import { SigninDto, SignupDto, UserDto, TokenDto, SendLinkDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
@@ -20,27 +19,25 @@ import {
   EmailResponse,
 } from 'src/app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
-import { EmailService } from 'src/email/email.service';
-import { variables } from 'src/app/config';
 import { UsersService } from 'src/users/users.service';
+import { TokenUrlService } from './token-url.service';
 
 @Injectable()
 export class AuthService {
   dbRef = app.database().ref();
-  tokenRef = app.database().ref('tokens');
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService,
+    private readonly tokenUrlService: TokenUrlService,
     private readonly userService: UsersService,
   ) {}
 
   async signup(signupDto: SignupDto) {
     const user = await this.userService.create(signupDto);
-    const confirmationLink = await this.generateLink('confirm', user.id);
-    const res = await this.emailService.sendConfirmationEmail(user);
+    const res = await this.tokenUrlService.sendConfirmationUrl(user);
 
-    if (res[0].statusCode !== 202)
+    // TODO: remove this
+    if (res.statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
 
     return new UserDto(user);
@@ -115,9 +112,9 @@ export class AuthService {
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
-    const confirmationLink = await this.generateLink('confirm', userId);
-    const res = await this.emailService.sendConfirmationEmail(user);
-    if (res[0].statusCode !== 202)
+    const res = await this.tokenUrlService.sendConfirmationUrl(user);
+    // TODO: remove this
+    if (res.statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
@@ -126,20 +123,20 @@ export class AuthService {
     const userId = getUserIdFromEmail(email);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const user = userSnapshot.val();
-    const resetLink = await this.generateLink('password/reset', userId);
+    // const resetLink = await this.generateLink('password/reset', userId);
 
-    const res = await this.emailService.sendPasswordResetEmail({
-      email,
-      subject: 'BlazeHub: Reset Password 🔑🔑🔑',
-      context: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        link: resetLink,
-      },
-    });
+    // const res = await this.emailService.sendPasswordResetEmail({
+    //   email,
+    //   subject: 'BlazeHub: Reset Password 🔑🔑🔑',
+    //   context: {
+    //     firstName: user.firstName,
+    //     lastName: user.lastName,
+    //     link: resetLink,
+    //   },
+    // });
 
-    if (res[0].statusCode !== 202)
-      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
+    // if (res[0].statusCode !== 202)
+    //   throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
@@ -238,38 +235,20 @@ export class AuthService {
   }
 
   private async validateToken(token: string, deleteAfterValidation = false) {
-    const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
+    // const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
 
-    if (!tokenDataSnapshot.exists())
-      throw new BadRequestException(AuthResponse.INVALID_LINK);
+    // if (!tokenDataSnapshot.exists())
+    //   throw new BadRequestException(AuthResponse.INVALID_LINK);
 
-    const tokenData = tokenDataSnapshot.val();
-    if (tokenData.exp < Date.now()) {
-      tokenDataSnapshot.ref.remove();
+    // const tokenData = tokenDataSnapshot.val();
+    // if (tokenData.exp < Date.now()) {
+    //   tokenDataSnapshot.ref.remove();
 
-      throw new BadRequestException(AuthResponse.EXPIRED_LINK);
-    }
+    //   throw new BadRequestException(AuthResponse.EXPIRED_LINK);
+    // }
 
-    if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
+    // if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
 
-    return tokenData.userId;
-  }
-
-  private async generateLink(
-    basePath: 'password/reset' | 'confirm',
-    userId: string,
-  ) {
-    const chance = new Chance();
-    const token = chance.hash();
-
-    const tokenData = {
-      token,
-      userId,
-      exp: Date.now() + 60 * 60 * 1000,
-    };
-
-    await this.tokenRef.child(token).set(tokenData);
-
-    return `${variables.FRONTEND_URL}/${basePath}/${token}`;
+    return ' tokenData.userId';
   }
 }

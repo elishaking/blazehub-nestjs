@@ -8,21 +8,26 @@ import { IUser } from 'src/users/users.interface';
 export class EmailService {
   constructor(@InjectSendGrid() private sendGridService: SendGridService) {}
 
-  sendConfirmationEmail(user: IUser) {
-    return this.sendGridService.send({
+  async sendConfirmationEmail(user: IUser, url: string) {
+    const [res] = await this.sendGridService.send({
       from: variables.EMAIL,
       to: user.email,
       subject: 'BlazeHub: Verify your account 🤗🤗🤗',
       templateId: 'd-87162eaf8190473788f6146f3e4ae524',
       dynamicTemplateData: {
         name: `${user.firstName} ${user.lastName}`,
-        link: '',
+        link: url,
       },
     });
+
+    return {
+      statusCode: res.statusCode,
+      body: res.body,
+    };
   }
 
-  sendPasswordResetEmail(data: MailData) {
-    return this.sendGridService.send({
+  async sendPasswordResetEmail(data: MailData) {
+    const [res] = await this.sendGridService.send({
       from: variables.EMAIL,
       to: data.email,
       subject: data.subject,
@@ -32,6 +37,11 @@ export class EmailService {
         link: data.context.link,
       },
     });
+
+    return {
+      statusCode: res.statusCode,
+      body: res.body,
+    };
   }
 
   sendInviteEmail(data: InviteMailData) {
