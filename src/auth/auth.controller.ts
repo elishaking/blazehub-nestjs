@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninDto, SignupDto, TokenDto, SendLinkDto } from './dto';
+import { SigninDto, SignupDto, TokenDto, SendUrlDto } from './dto';
 import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Controller('auth')
@@ -23,13 +23,13 @@ export class AuthController {
   }
 
   @Post('/confirm/resend')
-  resendConfirmationLink(@Body() sendLinkDto: SendLinkDto) {
-    return this.authService.resendConfirmationLink(sendLinkDto);
+  resendConfirmationUrl(@Body() sendLinkDto: SendUrlDto) {
+    return this.authService.resendConfirmationUrl(sendLinkDto);
   }
 
   @Post('/password/confirm')
-  confirmPasswordResetLink(@Body() tokenDto: TokenDto) {
-    return this.authService.confirmPasswordResetLink(tokenDto);
+  confirmPasswordResetUrl(@Body() tokenDto: TokenDto) {
+    return this.authService.confirmPasswordResetUrl(tokenDto);
   }
 
   @Post('/password/reset')
@@ -37,7 +37,7 @@ export class AuthController {
     return this.authService.resetPassword(passwordResetDto);
   }
   @Post('/password/forgot')
-  sendPasswordResetLink(@Body() sendLinkDto: SendLinkDto) {
-    return this.authService.sendPasswordResetLink(sendLinkDto);
+  sendPasswordResetLink(@Body() sendLinkDto: SendUrlDto) {
+    return this.authService.sendPasswordResetUrl(sendLinkDto);
   }
 }

@@ -37,6 +37,22 @@ export class UsersService {
     return newUser;
   }
 
+  async findById(userId: string): Promise<IUser> {
+    const userSnapshot = await this.usersRef.child(userId).once('value');
+    if (!userSnapshot.exists())
+      throw new NotFoundException(UserError.NOT_FOUND);
+
+    return userSnapshot.val();
+  }
+
+  async findByIdSnapshot(userId: string) {
+    const userSnapshot = await this.usersRef.child(userId).once('value');
+    if (!userSnapshot.exists())
+      throw new NotFoundException(UserError.NOT_FOUND);
+
+    return userSnapshot;
+  }
+
   async findByEmail(email: string): Promise<IUser> {
     const userId = this.generateUserId(email);
     const userRef = this.usersRef.child(userId);
@@ -46,6 +62,12 @@ export class UsersService {
       throw new NotFoundException(UserError.NOT_FOUND);
 
     return userSnapshot.val();
+  }
+
+  async resetPassword(userId: string, newPassword: string) {
+    const userSnapshot = await this.findByIdSnapshot(userId);
+
+    return await userSnapshot.ref.child('password').set(newPassword);
   }
 
   private generateUserId(email: string): string {

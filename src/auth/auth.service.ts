@@ -1,13 +1,12 @@
 import {
   Injectable,
-  NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
 import 'firebase/database';
-import { SigninDto, SignupDto, UserDto, TokenDto, SendLinkDto } from './dto';
+import { SigninDto, SignupDto, UserDto, TokenDto, SendUrlDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './auth.interface';
 import { SigninResponseDto } from './dto/signin.dto';
@@ -64,9 +63,8 @@ export class AuthService {
   async confirmUser(tokenDto: TokenDto) {
     const { token } = tokenDto;
     const userId = await this.tokenUrlService.validateToken(token, true);
-    const userSnapshot = await this.fetchUserSnapshot(userId);
-    const user = userSnapshot.val();
-    if (user.confirmed)
+    const userSnapshot = await this.userService.findByIdSnapshot(userId);
+    if (userSnapshot.val().confirmed)
       throw new UnprocessableEntityException(AuthError.ALREADY_CONFIRMED);
 
     userSnapshot.ref.child('confirmed').set(true);
@@ -77,12 +75,10 @@ export class AuthService {
     };
   }
 
-  async resendConfirmationLink(sendLinkDto: SendLinkDto) {
-    const { email } = sendLinkDto;
+  async resendConfirmationUrl(sendUrlDto: SendUrlDto) {
+    const { email } = sendUrlDto;
     const userId = getUserIdFromEmail(email);
-    const userSnapshot = await this.fetchUserSnapshot(userId);
-
-    const user = userSnapshot.val();
+    const user = await this.userService.findById(userId);
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthError.ALREADY_CONFIRMED);
 
@@ -92,17 +88,16 @@ export class AuthService {
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
-  async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
-    const userId = getUserIdFromEmail(sendLinkDto.email);
-    const userSnapshot = await this.fetchUserSnapshot(userId);
-    const user = userSnapshot.val();
+  async sendPasswordResetUrl(sendUrlDto: SendUrlDto) {
+    const userId = getUserIdFromEmail(sendUrlDto.email);
+    const user = await this.userService.findById(userId);
     const res = await this.tokenUrlService.sendPasswordResetUrl(user);
     // TODO: remove this
     if (res.statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
-  async confirmPasswordResetLink(tokenDto: TokenDto) {
+  async confirmPasswordResetUrl(tokenDto: TokenDto) {
     const { token } = tokenDto;
     const userId = await this.tokenUrlService.validateToken(token);
 
@@ -115,22 +110,11 @@ export class AuthService {
   async resetPassword(passwordResetDto: PasswordResetDto) {
     const { token, password } = passwordResetDto;
     const userId = await this.tokenUrlService.validateToken(token, true);
-    const userSnapshot = await this.fetchUserSnapshot(userId);
-    const hash = await this.passwordService.encryptPassword(password);
+    const encryptedPassword = await this.passwordService.encryptPassword(
+      password,
+    );
 
-    return await userSnapshot.ref.child('password').set(hash);
-  }
-
-  private async fetchUserSnapshot(userId: string) {
-    const userSnapshot = await this.dbRef
-      .child('users')
-      .child(userId)
-      .once('value');
-
-    if (!userSnapshot.exists())
-      throw new NotFoundException(AuthError.ACCOUNT_NOT_FOUND);
-
-    return userSnapshot;
+    return this.userService.resetPassword(userId, encryptedPassword);
   }
 
   private generateAccessToken(user: IUser) {
@@ -144,16 +128,6 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
-  }
-
-  private async getUsername(userId: string): Promise<string> {
-    const usernameSnapshot = await this.dbRef
-      .child('profiles')
-      .child(userId)
-      .child('username')
-      .once('value');
-
-    return usernameSnapshot.val();
   }
 
   private async initializeNewUser(userId: string, username: string) {
