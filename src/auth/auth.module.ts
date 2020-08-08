@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { variables } from 'src/app/config';
 import { EmailService } from 'src/email/email.service';
 import { TokenUrlService } from './token-url.service';
+import { PasswordService } from './password/password.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { TokenUrlService } from './token-url.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, EmailService, TokenUrlService],
+  providers: [AuthService, JwtStrategy, EmailService, TokenUrlService, PasswordService],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
