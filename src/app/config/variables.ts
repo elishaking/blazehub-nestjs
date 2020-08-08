@@ -33,6 +33,9 @@ interface Variables {
   FEEDBACK_MAIL?: string;
 
   FRONTEND_URL?: string;
+
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
 }
 
 export const variables: Variables = {
@@ -67,4 +70,7 @@ export const variables: Variables = {
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
       : process.env.FRONTEND_URL,
+
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 };
