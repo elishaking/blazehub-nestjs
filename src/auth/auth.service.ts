@@ -86,10 +86,8 @@ export class AuthService {
 
   async confirmUser(tokenDto: TokenDto) {
     const { token } = tokenDto;
-    const userId = await this.validateToken(token, true);
-
+    const userId = await this.tokenUrlService.validateToken(token, true);
     const userSnapshot = await this.fetchUserSnapshot(userId);
-
     const user = userSnapshot.val();
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
@@ -129,7 +127,7 @@ export class AuthService {
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {
     const { token } = tokenDto;
-    const userId = await this.validateToken(token);
+    const userId = await this.tokenUrlService.validateToken(token);
 
     return {
       success: true,
@@ -139,7 +137,7 @@ export class AuthService {
 
   async resetPassword(passwordResetDto: PasswordResetDto) {
     const { token, password } = passwordResetDto;
-    const userId = await this.validateToken(token, true);
+    const userId = await this.tokenUrlService.validateToken(token, true);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const hash = await this.generateHashedPassword(password);
     await userSnapshot.ref.child('password').set(hash);
@@ -220,23 +218,5 @@ export class AuthService {
       .child(userId)
       .child('username')
       .set(username);
-  }
-
-  private async validateToken(token: string, deleteAfterValidation = false) {
-    // const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
-
-    // if (!tokenDataSnapshot.exists())
-    //   throw new BadRequestException(AuthResponse.INVALID_LINK);
-
-    // const tokenData = tokenDataSnapshot.val();
-    // if (tokenData.exp < Date.now()) {
-    //   tokenDataSnapshot.ref.remove();
-
-    //   throw new BadRequestException(AuthResponse.EXPIRED_LINK);
-    // }
-
-    // if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
-
-    return ' tokenData.userId';
   }
 }

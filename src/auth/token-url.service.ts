@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Chance } from 'chance';
 import * as app from 'firebase/app';
 import 'firebase/database';
@@ -6,6 +6,7 @@ import 'firebase/database';
 import { variables } from '../app/config';
 import { IUser } from 'src/users/users.interface';
 import { EmailService } from 'src/email/email.service';
+import { UrlError } from 'src/app/constants/service-response';
 
 @Injectable()
 export class TokenUrlService {
@@ -50,6 +51,23 @@ export class TokenUrlService {
         body: '',
       };
     }
+  }
+
+  async validateToken(token: string, deleteAfterValidation = false) {
+    const tokenDataSnapshot = await this.tokenRef.child(token).once('value');
+    if (!tokenDataSnapshot.exists())
+      throw new BadRequestException(UrlError.INVALID_URL);
+
+    const tokenData = tokenDataSnapshot.val();
+    if (tokenData.exp < Date.now()) {
+      tokenDataSnapshot.ref.remove();
+
+      throw new BadRequestException(UrlError.EXPIRED_URL);
+    }
+
+    if (deleteAfterValidation) tokenDataSnapshot.ref.remove();
+
+    return tokenData.userId;
   }
 
   private async generateUrl(
