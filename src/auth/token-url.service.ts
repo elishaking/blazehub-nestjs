@@ -31,6 +31,27 @@ export class TokenUrlService {
     }
   }
 
+  async sendPasswordResetUrl(user: IUser) {
+    try {
+      const passwordResetUrl = await this.generateUrl(
+        'password/reset',
+        user.id,
+      );
+
+      return await this.emailService.sendPasswordResetEmail(
+        user,
+        passwordResetUrl,
+      );
+    } catch (err) {
+      console.error(err);
+
+      return {
+        statusCode: 500,
+        body: '',
+      };
+    }
+  }
+
   private async generateUrl(
     basePath: 'password/reset' | 'confirm',
     userId: string,

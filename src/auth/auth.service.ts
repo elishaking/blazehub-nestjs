@@ -3,7 +3,6 @@ import {
   NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
-  BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as app from 'firebase/app';
@@ -119,24 +118,13 @@ export class AuthService {
   }
 
   async sendPasswordResetLink(sendLinkDto: SendLinkDto) {
-    const { email } = sendLinkDto;
-    const userId = getUserIdFromEmail(email);
+    const userId = getUserIdFromEmail(sendLinkDto.email);
     const userSnapshot = await this.fetchUserSnapshot(userId);
     const user = userSnapshot.val();
-    // const resetLink = await this.generateLink('password/reset', userId);
-
-    // const res = await this.emailService.sendPasswordResetEmail({
-    //   email,
-    //   subject: 'BlazeHub: Reset Password 🔑🔑🔑',
-    //   context: {
-    //     firstName: user.firstName,
-    //     lastName: user.lastName,
-    //     link: resetLink,
-    //   },
-    // });
-
-    // if (res[0].statusCode !== 202)
-    //   throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
+    const res = await this.tokenUrlService.sendPasswordResetUrl(user);
+    // TODO: remove this
+    if (res.statusCode !== 202)
+      throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }
 
   async confirmPasswordResetLink(tokenDto: TokenDto) {

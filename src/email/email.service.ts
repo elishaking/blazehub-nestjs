@@ -26,15 +26,15 @@ export class EmailService {
     };
   }
 
-  async sendPasswordResetEmail(data: MailData) {
+  async sendPasswordResetEmail(user: IUser, url: string) {
     const [res] = await this.sendGridService.send({
       from: variables.EMAIL,
-      to: data.email,
-      subject: data.subject,
+      to: user.email,
+      subject: 'BlazeHub: Reset Password 🔑🔑🔑',
       templateId: 'd-92af2cb2c498469889d0dd88571bb7e3',
       dynamicTemplateData: {
-        name: `${data.context.firstName} ${data.context.lastName}`,
-        link: data.context.link,
+        name: `${user.firstName} ${user.lastName}`,
+        link: url,
       },
     });
 
