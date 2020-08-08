@@ -2,20 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 import { MailData, FeedbackMailData, InviteMailData } from './email.interface';
 import { variables } from 'src/app/config';
+import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class EmailService {
   constructor(@InjectSendGrid() private sendGridService: SendGridService) {}
 
-  sendConfirmationEmail(data: MailData) {
+  sendConfirmationEmail(user: IUser) {
     return this.sendGridService.send({
       from: variables.EMAIL,
-      to: data.email,
-      subject: data.subject,
+      to: user.email,
+      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
       templateId: 'd-87162eaf8190473788f6146f3e4ae524',
       dynamicTemplateData: {
-        name: `${data.context.firstName} ${data.context.lastName}`,
-        link: data.context.link,
+        name: `${user.firstName} ${user.lastName}`,
+        link: '',
       },
     });
   }

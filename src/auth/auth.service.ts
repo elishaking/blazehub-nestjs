@@ -3,7 +3,6 @@ import {
   NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
-  ConflictException,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -39,15 +38,7 @@ export class AuthService {
   async signup(signupDto: SignupDto) {
     const user = await this.userService.create(signupDto);
     const confirmationLink = await this.generateLink('confirm', user.id);
-    const res = await this.emailService.sendConfirmationEmail({
-      email: user.email,
-      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
-      context: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        link: confirmationLink,
-      },
-    });
+    const res = await this.emailService.sendConfirmationEmail(user);
 
     if (res[0].statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
@@ -125,17 +116,7 @@ export class AuthService {
       throw new UnprocessableEntityException(AuthResponse.ALREADY_CONFIRMED);
 
     const confirmationLink = await this.generateLink('confirm', userId);
-
-    const res = await this.emailService.sendConfirmationEmail({
-      email: user.email,
-      subject: 'BlazeHub: Verify your account 🤗🤗🤗',
-      context: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        link: confirmationLink,
-      },
-    });
-
+    const res = await this.emailService.sendConfirmationEmail(user);
     if (res[0].statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
   }

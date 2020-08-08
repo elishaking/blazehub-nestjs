@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, IsIn } from 'class-validator';
 
-type GenderType = 'Male' | 'Female' | 'Other';
+export type GenderType = 'Male' | 'Female' | 'Other';
 
 export class SignupDto {
   @ApiProperty()

@@ -4,12 +4,13 @@ import 'firebase/database';
 
 import { SignupDto } from 'src/auth/dto';
 import { UserError } from 'src/app/constants/service-response';
+import { IUser } from './users.interface';
 
 @Injectable()
 export class UsersService {
   usersRef = app.database().ref('users');
 
-  async create(signupDto: SignupDto) {
+  async create(signupDto: SignupDto): Promise<IUser> {
     const userId = this.generateUserId(signupDto.email);
     const userRef = this.usersRef.child(userId);
     const userSnapshot = await userRef.once('value');
