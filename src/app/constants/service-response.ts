@@ -8,6 +8,10 @@ export enum AuthResponse {
   EXPIRED_LINK = 'Expired link',
 }
 
+export enum UserError {
+  CONFLICT = 'Your account already exists, please sign in',
+}
+
 export enum EmailResponse {
   SEND_FAIL = 'Could not send email to the specified address',
 }

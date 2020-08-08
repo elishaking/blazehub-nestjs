@@ -23,6 +23,7 @@ import {
 import { PasswordResetDto } from './dto/password-reset.dto';
 import { EmailService } from 'src/email/email.service';
 import { variables } from 'src/app/config';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -30,42 +31,20 @@ export class AuthService {
   tokenRef = app.database().ref('tokens');
 
   constructor(
-    private jwtService: JwtService,
-    private emailService: EmailService,
+    private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
+    private readonly userService: UsersService,
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { email, firstName, lastName, password, gender } = signupDto;
-    const userId = getUserIdFromEmail(email);
-    const userRef = this.dbRef.child('users').child(userId);
-
-    const userSnapshot = await userRef.once('value');
-    if (userSnapshot.exists())
-      throw new ConflictException(AuthResponse.ACCOUNT_CONFLICT);
-
-    const hashedPassword = await this.generateHashedPassword(password);
-    const username = await this.generateUsername(firstName, lastName);
-
-    const newUser = {
-      email,
-      username,
-      firstName,
-      lastName,
-      password: hashedPassword,
-      confirmed: false,
-      gender: gender || 'Other',
-    };
-    await userRef.set(newUser);
-    await this.initializeNewUser(userId, username);
-
-    const confirmationLink = await this.generateLink('confirm', userId);
-
+    const user = await this.userService.create(signupDto);
+    const confirmationLink = await this.generateLink('confirm', user.id);
     const res = await this.emailService.sendConfirmationEmail({
-      email: newUser.email,
+      email: user.email,
       subject: 'BlazeHub: Verify your account 🤗🤗🤗',
       context: {
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         link: confirmationLink,
       },
     });
@@ -73,7 +52,7 @@ export class AuthService {
     if (res[0].statusCode !== 202)
       throw new InternalServerErrorException(EmailResponse.SEND_FAIL);
 
-    return new UserDto(newUser);
+    return new UserDto(user);
   }
 
   async signin(signinDto: SigninDto) {
