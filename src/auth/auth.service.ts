@@ -183,24 +183,6 @@ export class AuthService {
     return usernameSnapshot.val();
   }
 
-  private async generateUsername(firstName: string, lastName: string) {
-    const username = `${firstName.replace(/ /g, '')}.${lastName.replace(
-      / /g,
-      '',
-    )}`.toLowerCase();
-
-    const userSnapshot = await this.dbRef
-      .child('users')
-      .orderByChild('username')
-      .equalTo(username)
-      .limitToFirst(1)
-      .once('value');
-
-    if (userSnapshot.exists()) return username + Date.now().toString();
-
-    return username;
-  }
-
   private async initializeNewUser(userId: string, username: string) {
     const data = {
       blazebot: {

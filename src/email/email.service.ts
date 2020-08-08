@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
-import { MailData, FeedbackMailData, InviteMailData } from './email.interface';
+import { FeedbackMailData, InviteMailData } from './email.interface';
 import { variables } from 'src/app/config';
 import { IUser } from 'src/users/users.interface';
 
