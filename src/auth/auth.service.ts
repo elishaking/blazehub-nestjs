@@ -4,13 +4,11 @@ import {
   UnprocessableEntityException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import * as app from 'firebase/app';
-import 'firebase/database';
-import { SigninDto, SignupDto, UserDto, TokenDto, SendUrlDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
+
+import { SigninDto, SignupDto, UserDto, TokenDto, SendUrlDto } from './dto';
 import { JwtPayload } from './auth.interface';
 import { SigninResponseDto } from './dto/signin.dto';
-import { getUserIdFromEmail } from './auth.util';
 import { AuthError, EmailResponse } from 'src/app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
 import { UsersService } from 'src/users/users.service';
@@ -20,8 +18,6 @@ import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class AuthService {
-  dbRef = app.database().ref();
-
   constructor(
     private readonly jwtService: JwtService,
     private readonly tokenUrlService: TokenUrlService,
@@ -76,9 +72,7 @@ export class AuthService {
   }
 
   async resendConfirmationUrl(sendUrlDto: SendUrlDto) {
-    const { email } = sendUrlDto;
-    const userId = getUserIdFromEmail(email);
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findByEmail(sendUrlDto.email);
     if (user.confirmed)
       throw new UnprocessableEntityException(AuthError.ALREADY_CONFIRMED);
 
@@ -89,8 +83,7 @@ export class AuthService {
   }
 
   async sendPasswordResetUrl(sendUrlDto: SendUrlDto) {
-    const userId = getUserIdFromEmail(sendUrlDto.email);
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findByEmail(sendUrlDto.email);
     const res = await this.tokenUrlService.sendPasswordResetUrl(user);
     // TODO: remove this
     if (res.statusCode !== 202)
@@ -130,22 +123,22 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  private async initializeNewUser(userId: string, username: string) {
-    const data = {
-      blazebot: {
-        name: 'BlazeBot',
-      },
-    };
+  // private async initializeNewUser(userId: string, username: string) {
+  //   const data = {
+  //     blazebot: {
+  //       name: 'BlazeBot',
+  //     },
+  //   };
 
-    await this.dbRef
-      .child('friends')
-      .child(userId)
-      .set(data);
+  //   await this.dbRef
+  //     .child('friends')
+  //     .child(userId)
+  //     .set(data);
 
-    await this.dbRef
-      .child('profiles')
-      .child(userId)
-      .child('username')
-      .set(username);
-  }
+  //   await this.dbRef
+  //     .child('profiles')
+  //     .child(userId)
+  //     .child('username')
+  //     .set(username);
+  // }
 }
