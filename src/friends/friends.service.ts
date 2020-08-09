@@ -11,26 +11,7 @@ export class FriendsService {
 
   constructor(private emailService: EmailService) {}
 
-  async fetchPotientialFriends() {
-    // TODO: work on this: create a cloud function to filter users already in current (requesting) user's friend list
-    const usersSnapshot = await this.dbRef
-      .child('users')
-      .limitToLast(30)
-      .once('value');
-
-    return usersSnapshot.exists() ? usersSnapshot.val() : [];
-  }
-
-  async fetchFriends(userId: string) {
-    const friendsSnapShot = await this.dbRef
-      .child('friends')
-      .child(userId)
-      .once('value');
-
-    return friendsSnapShot.exists() ? friendsSnapShot.val() : [];
-  }
-
-  async createFriend(createFriendDto: CreateFriendDto, user: UserDto) {
+  async create(createFriendDto: CreateFriendDto, user: UserDto) {
     const { friendId, friend } = createFriendDto;
     const { id, firstName, lastName } = user;
 
@@ -53,7 +34,26 @@ export class FriendsService {
     return { [friendId]: friend };
   }
 
-  async inviteFriends(data: InviteFriendsDto, user: UserDto) {
+  async findPotiential() {
+    // TODO: work on this: create a cloud function to filter users already in current (requesting) user's friend list
+    const usersSnapshot = await this.dbRef
+      .child('users')
+      .limitToLast(30)
+      .once('value');
+
+    return usersSnapshot.exists() ? usersSnapshot.val() : [];
+  }
+
+  async findById(userId: string) {
+    const friendsSnapShot = await this.dbRef
+      .child('friends')
+      .child(userId)
+      .once('value');
+
+    return friendsSnapShot.exists() ? friendsSnapShot.val() : [];
+  }
+
+  async invite(data: InviteFriendsDto, user: UserDto) {
     const { mails } = data;
     const { firstName, lastName } = user;
     const errors = [];

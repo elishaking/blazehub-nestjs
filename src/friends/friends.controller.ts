@@ -11,31 +11,25 @@ export class FriendsController {
 
   @UseGuards(AuthGuard())
   @Get()
-  fetchFriends(@GetUser() user: UserDto) {
-    return this.friendsService.fetchFriends(user.id);
+  find(@GetUser() user: UserDto) {
+    return this.friendsService.findById(user.id);
   }
 
   @UseGuards(AuthGuard())
   @Get('/new')
-  fetchPotientialFriends() {
-    return this.friendsService.fetchPotientialFriends();
+  fetchPotiential() {
+    return this.friendsService.findPotiential();
   }
 
   @UseGuards(AuthGuard())
   @Post('/add')
-  createFriend(
-    @Body() createFriendDto: CreateFriendDto,
-    @GetUser() user: UserDto,
-  ) {
-    return this.friendsService.createFriend(createFriendDto, user);
+  create(@Body() createFriendDto: CreateFriendDto, @GetUser() user: UserDto) {
+    return this.friendsService.create(createFriendDto, user);
   }
 
   @UseGuards(AuthGuard())
   @Post('/invite')
-  inviteFriends(
-    @Body() inviteFriendsDto: InviteFriendsDto,
-    @GetUser() user: UserDto,
-  ) {
-    return this.friendsService.inviteFriends(inviteFriendsDto, user);
+  invite(@Body() inviteFriendsDto: InviteFriendsDto, @GetUser() user: UserDto) {
+    return this.friendsService.invite(inviteFriendsDto, user);
   }
 }
