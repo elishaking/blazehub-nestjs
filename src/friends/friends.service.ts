@@ -12,25 +12,10 @@ export class FriendsService {
 
   constructor(private emailService: EmailService) {}
 
-  async create(createFriendDto: CreateFriendDto, user: UserDto) {
+  async create(createFriendDto: CreateFriendDto, userDto: UserDto) {
     const { friendId, friend } = createFriendDto;
-    const { id, firstName, lastName } = user;
-
-    // add new-friend to current-user's friends db
-    await this.dbRef
-      .child('friends')
-      .child(id)
-      .child(friendId)
-      .set(friend);
-
-    // add current-user to new-friend's db
-    await this.dbRef
-      .child('friends')
-      .child(friendId)
-      .child(id)
-      .set({
-        name: `${firstName} ${lastName}`,
-      });
+    await this.addFriendToUser(createFriendDto, userDto);
+    await this.addUserToFriend(createFriendDto, userDto);
 
     return { [friendId]: friend };
   }
@@ -72,5 +57,29 @@ export class FriendsService {
 
     if (errors.length > 0)
       throw new InternalServerErrorException(errors.map(e => e.index));
+  }
+
+  private async addFriendToUser(
+    createFriendDto: CreateFriendDto,
+    userDto: UserDto,
+  ) {
+    return await this.dbRef
+      .child('friends')
+      .child(userDto.id)
+      .child(createFriendDto.friendId)
+      .set(createFriendDto.friend);
+  }
+
+  private async addUserToFriend(
+    createFriendDto: CreateFriendDto,
+    userDto: UserDto,
+  ) {
+    return await this.dbRef
+      .child('friends')
+      .child(createFriendDto.friendId)
+      .child(userDto.id)
+      .set({
+        name: `${userDto.firstName} ${userDto.lastName}`,
+      });
   }
 }
