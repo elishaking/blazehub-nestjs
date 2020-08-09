@@ -1,3 +1,8 @@
+export interface IMail {
+  email: string;
+  name: string;
+}
+
 interface MailContext {
   firstName: string;
   lastName: string;

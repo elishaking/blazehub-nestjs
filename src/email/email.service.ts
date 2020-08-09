@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
-import { FeedbackMailData, InviteMailData } from './email.interface';
+
+import { FeedbackMailData, IMail } from './email.interface';
 import { variables } from 'src/app/config';
 import { IUser } from 'src/users/users.interface';
+import { UserDto } from 'src/auth/dto';
 
 @Injectable()
 export class EmailService {
@@ -44,16 +46,16 @@ export class EmailService {
     };
   }
 
-  sendInvite(data: InviteMailData) {
+  sendInvite({ email, name }: IMail, userDto: UserDto) {
     return this.sendGridService.send({
       from: variables.EMAIL,
-      to: data.email,
-      subject: data.subject,
+      to: email,
+      subject: `From ${userDto.firstName} | Hi, Join me on BlazeHub`,
       templateId: 'd-e638b58be8ab458bb35b683fd459f940',
       dynamicTemplateData: {
-        name: data.context.receiver || 'there',
-        link: data.context.link,
-        user: `${data.context.firstName} ${data.context.lastName}`,
+        name: name || 'there',
+        link: 'https://blazehub.skyblazar.com',
+        user: `${userDto.firstName} ${userDto.lastName}`,
       },
     });
   }
