@@ -96,4 +96,6 @@ export class UsersService {
 
     return username;
   }
+
+  // TODO: update profile
 }
