@@ -36,6 +36,7 @@ export class UsersService {
 
     await userRef.set(newUser);
     await this.friendService.addBlazeBot(userId);
+    await this.createProfile(newUser);
 
     return newUser;
   }
@@ -97,5 +98,12 @@ export class UsersService {
     return username;
   }
 
-  // TODO: update profile
+  private async createProfile({ id, username }: IUser) {
+    await app
+      .database()
+      .ref('profiles')
+      .child(id)
+      .child('username')
+      .set(username);
+  }
 }
