@@ -22,7 +22,7 @@ export class AppService {
     };
 
     try {
-      const res = await this.emailService.sendFeedbackEmail({
+      const res = await this.emailService.sendFeedback({
         email: variables.FEEDBACK_MAIL as string,
         subject: 'BlazeHub | Feedback mail',
         context,

@@ -18,10 +18,7 @@ export class TokenUrlService {
     try {
       const confirmationUrl = await this.generateUrl('confirm', user.id);
 
-      return await this.emailService.sendConfirmationEmail(
-        user,
-        confirmationUrl,
-      );
+      return await this.emailService.sendConfirmation(user, confirmationUrl);
     } catch (err) {
       console.error(err);
 
@@ -39,10 +36,7 @@ export class TokenUrlService {
         user.id,
       );
 
-      return await this.emailService.sendPasswordResetEmail(
-        user,
-        passwordResetUrl,
-      );
+      return await this.emailService.sendPasswordReset(user, passwordResetUrl);
     } catch (err) {
       console.error(err);
 

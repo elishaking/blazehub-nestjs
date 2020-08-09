@@ -8,7 +8,7 @@ import { IUser } from 'src/users/users.interface';
 export class EmailService {
   constructor(@InjectSendGrid() private sendGridService: SendGridService) {}
 
-  async sendConfirmationEmail(user: IUser, url: string) {
+  async sendConfirmation(user: IUser, url: string) {
     const [res] = await this.sendGridService.send({
       from: variables.EMAIL,
       to: user.email,
@@ -26,7 +26,7 @@ export class EmailService {
     };
   }
 
-  async sendPasswordResetEmail(user: IUser, url: string) {
+  async sendPasswordReset(user: IUser, url: string) {
     const [res] = await this.sendGridService.send({
       from: variables.EMAIL,
       to: user.email,
@@ -44,7 +44,7 @@ export class EmailService {
     };
   }
 
-  sendInviteEmail(data: InviteMailData) {
+  sendInvite(data: InviteMailData) {
     return this.sendGridService.send({
       from: variables.EMAIL,
       to: data.email,
@@ -58,7 +58,7 @@ export class EmailService {
     });
   }
 
-  sendFeedbackEmail(data: FeedbackMailData) {
+  sendFeedback(data: FeedbackMailData) {
     return this.sendGridService.send({
       from: variables.EMAIL,
       to: data.email,
