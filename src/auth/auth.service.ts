@@ -124,17 +124,8 @@ export class AuthService {
   }
 
   // private async initializeNewUser(userId: string, username: string) {
-  //   const data = {
-  //     blazebot: {
-  //       name: 'BlazeBot',
-  //     },
-  //   };
 
-  //   await this.dbRef
-  //     .child('friends')
-  //     .child(userId)
-  //     .set(data);
-
+  //   not needed after migrations
   //   await this.dbRef
   //     .child('profiles')
   //     .child(userId)

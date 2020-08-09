@@ -1,9 +1,10 @@
 import { Controller, Body, Post, Get, UseGuards } from '@nestjs/common';
-import { FriendsService } from './friends.service';
-import { CreateFriendDto, InviteFriendsDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/auth/get-user.decorator';
+
+import { CreateFriendDto, InviteFriendsDto } from './dto';
 import { UserDto } from 'src/auth/dto';
+import { FriendsService } from './friends.service';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('friends')
 export class FriendsController {

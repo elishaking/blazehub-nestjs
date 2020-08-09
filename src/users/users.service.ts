@@ -9,10 +9,13 @@ import 'firebase/database';
 import { SignupDto } from 'src/auth/dto';
 import { UserError } from 'src/app/constants/service-response';
 import { IUser } from './users.interface';
+import { FriendsService } from 'src/friends/friends.service';
 
 @Injectable()
 export class UsersService {
   usersRef = app.database().ref('users');
+
+  constructor(private readonly friendService: FriendsService) {}
 
   async create(signupDto: SignupDto): Promise<IUser> {
     const userId = this.generateUserId(signupDto.email);
@@ -32,7 +35,7 @@ export class UsersService {
     };
 
     await userRef.set(newUser);
-    // TODO: initializeNewUser
+    await this.friendService.addBlazeBot(userId);
 
     return newUser;
   }

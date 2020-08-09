@@ -3,8 +3,8 @@ import * as app from 'firebase/app';
 import 'firebase/database';
 
 import { CreateFriendDto, InviteFriendsDto } from './dto';
-import { EmailService } from 'src/email/email.service';
 import { UserDto } from 'src/auth/dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class FriendsService {
@@ -18,6 +18,19 @@ export class FriendsService {
     await this.addUserToFriend(createFriendDto, userDto);
 
     return { [friendId]: friend };
+  }
+
+  async addBlazeBot(userId: string) {
+    const data = {
+      blazebot: {
+        name: 'BlazeBot',
+      },
+    };
+
+    await this.dbRef
+      .child('friends')
+      .child(userId)
+      .set(data);
   }
 
   async findPotiential() {
