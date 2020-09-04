@@ -1,4 +1,4 @@
-import { GenderType } from 'src/auth/dto';
+import { GenderType } from 'src/modules/auth/dto';
 
 export interface IUser {
   id: string;

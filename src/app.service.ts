@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EmailService } from './email/email.service';
-import { FeedbackMailContext } from './email/email.interface';
+import { EmailService } from './modules/email/email.service';
+import { FeedbackMailContext } from './modules/email/email.interface';
 import { variables, firebaseConfig } from './app/config';
 import { FeedbackDto } from './dto/feedback.dto';
 import { EmailResponse } from './app/constants/service-response';

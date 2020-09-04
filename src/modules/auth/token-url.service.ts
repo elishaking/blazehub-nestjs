@@ -3,9 +3,9 @@ import { Chance } from 'chance';
 import * as app from 'firebase/app';
 import 'firebase/database';
 
-import { variables } from '../app/config';
-import { IUser } from 'src/users/users.interface';
-import { EmailService } from 'src/email/email.service';
+import { variables } from '../../app/config';
+import { IUser } from 'src/modules/users/users.interface';
+import { EmailService } from 'src/modules/email/email.service';
 import { UrlError } from 'src/app/constants/service-response';
 
 @Injectable()
