@@ -12,13 +12,13 @@ export class AppController {
     return this.appService.getRoot();
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   @Get('/firebase/config')
   getFirebaseConfig() {
     return this.appService.getFirebaseConfig();
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   @Post('/feedback')
   sendFeedback(@Body() feedbackDto: FeedbackDto) {
     return this.appService.sendFeedback(feedbackDto);

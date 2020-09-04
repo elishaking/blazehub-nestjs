@@ -1,14 +1,13 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import * as app from 'firebase/app';
-import 'firebase/database';
-import { JwtPayload } from './auth.interface';
 import { UnauthorizedException } from '@nestjs/common';
-import { getUserIdFromEmail } from './auth.util';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+
+import { JwtPayload } from './auth.interface';
 import { UserDto } from './dto/user.dto';
+import { UsersService } from 'src/users/users.service';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly userService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET,
@@ -16,13 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    const userId = getUserIdFromEmail(payload.email);
-    const userSnapshot = await app
-      .database()
-      .ref('users')
-      .child(userId)
-      .once('value');
-
+    console.log(payload);
+    const userSnapshot = await this.userService.findByEmailSnapshot(
+      payload.email,
+    );
     if (!userSnapshot.exists())
       throw new UnauthorizedException('Your account was not found');
 

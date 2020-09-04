@@ -122,14 +122,4 @@ export class AuthService {
 
     return this.jwtService.sign(payload);
   }
-
-  // private async initializeNewUser(userId: string, username: string) {
-
-  //   not needed after migrations
-  //   await this.dbRef
-  //     .child('profiles')
-  //     .child(userId)
-  //     .child('username')
-  //     .set(username);
-  // }
 }

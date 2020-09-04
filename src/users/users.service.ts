@@ -68,6 +68,13 @@ export class UsersService {
     return userSnapshot.val();
   }
 
+  async findByEmailSnapshot(email: string) {
+    const userId = this.generateUserId(email);
+    const userSnapshot = await this.usersRef.child(userId).once('value');
+
+    return userSnapshot;
+  }
+
   async resetPassword(userId: string, newPassword: string) {
     const userSnapshot = await this.findByIdSnapshot(userId);
 

@@ -1,34 +1,32 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
+import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
-import { variables } from 'src/app/config';
-import { EmailService } from 'src/email/email.service';
 import { TokenUrlService } from './token-url.service';
 import { PasswordService } from './password.service';
+import { JwtStrategy } from './jwt.strategy';
+import { variables } from 'src/app/config';
+import { EmailModule } from 'src/email/email.module';
+
+const ONE_DAY = 86400;
 
 @Module({
   imports: [
-    PassportModule.register({
-      defaultStrategy: 'jwt',
-    }),
+    UsersModule,
+    EmailModule,
+    PassportModule,
     JwtModule.register({
       secret: variables.JWT_SECRET,
       signOptions: {
-        expiresIn: 86400, // 1 day
+        expiresIn: ONE_DAY, // 1 day
       },
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    EmailService,
-    TokenUrlService,
-    PasswordService,
-  ],
-  exports: [JwtStrategy, PassportModule],
+  providers: [AuthService, TokenUrlService, PasswordService, JwtStrategy],
+  // exports: [JwtStrategy],
 })
 export class AuthModule {}
