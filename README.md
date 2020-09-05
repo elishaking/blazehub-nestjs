@@ -1,8 +1,11 @@
 # BlazeHub Backend
 
+![DEV](https://github.com/elishaking/blazehub-nestjs/workflows/DEV/badge.svg)
+
 BlazeHub Backend written in NestJS.
 
 Frontend code is available here: https://github.com/elishaking/blazehub-frontend
+
 Production App is available here: https://blazehub.skyblazar.com
 
 ## Setup

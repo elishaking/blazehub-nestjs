@@ -38,7 +38,7 @@ interface Variables {
 }
 
 export const variables: Variables = {
-  PORT: parseInt(process.env.PORT || '3000'),
+  PORT: +(process.env.PORT || '3000'),
   NODE_ENV: process.env.NODE_ENV as NodeEnvironment,
 
   FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -52,11 +52,11 @@ export const variables: Variables = {
 
   JWT_SECRET: process.env.JWT_SECRET,
 
-  REDIS_PORT: parseInt(process.env.REDIS_PORT as string),
+  REDIS_PORT: +(process.env.REDIS_PORT as string),
   REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PASSWORD: parseInt(process.env.REDIS_PASSWORD as string),
-  REDIS_CACHE_EXPIRY: parseInt(process.env.REDIS_CACHE_EXPIRY as string),
-  REDIS_HOST_IP_FAMILY: parseInt(process.env.REDIS_HOST_IP_FAMILY as string),
+  REDIS_PASSWORD: +(process.env.REDIS_PASSWORD as string),
+  REDIS_CACHE_EXPIRY: +(process.env.REDIS_CACHE_EXPIRY as string),
+  REDIS_HOST_IP_FAMILY: +(process.env.REDIS_HOST_IP_FAMILY as string),
 
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY || '',
   EMAIL_SERVICE: process.env.EMAIL_SERVICE,
