@@ -20,8 +20,6 @@ export class TokenUrlService {
 
       return await this.emailService.sendConfirmation(user, confirmationUrl);
     } catch (err) {
-      console.error(err);
-
       return {
         statusCode: 500,
         body: '',
@@ -38,8 +36,6 @@ export class TokenUrlService {
 
       return await this.emailService.sendPasswordReset(user, passwordResetUrl);
     } catch (err) {
-      console.error(err);
-
       return {
         statusCode: 500,
         body: '',

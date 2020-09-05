@@ -7,8 +7,8 @@
   "linterOptions": {
     "exclude": [
       "src/utils/logError.ts",
-      "src/index.tsx",
-      "src/serviceWorker.ts"
+      "src/app/migrations/**.ts",
+      "src/**/dto/**.ts"
     ]
   }
 }
