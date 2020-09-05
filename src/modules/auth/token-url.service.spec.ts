@@ -1,12 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { TokenUrlService } from './token-url.service';
+import { AppModule } from '../../app.module';
 
 describe('TokenUrlService', () => {
   let service: TokenUrlService;
+  let module: TestingModule;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [TokenUrlService],
+  afterAll(done =>
+    module
+      .close()
+      .then(() => done())
+      .catch(err => done(err)),
+  );
+
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [AppModule],
     }).compile();
 
     service = module.get<TokenUrlService>(TokenUrlService);

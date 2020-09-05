@@ -6,10 +6,10 @@ import {
 import * as app from 'firebase/app';
 import 'firebase/database';
 
-import { SignupDto } from 'src/modules/auth/dto';
-import { UserError } from 'src/app/constants/service-response';
+import { SignupDto } from '../auth/dto';
+import { UserError } from '../../app/constants/service-response';
 import { IUser } from './users.interface';
-import { FriendsService } from 'src/modules/friends/friends.service';
+import { FriendsService } from '../friends/friends.service';
 
 @Injectable()
 export class UsersService {

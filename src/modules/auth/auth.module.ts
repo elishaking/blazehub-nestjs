@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { UsersModule } from 'src/modules/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TokenUrlService } from './token-url.service';
 import { PasswordService } from './password.service';
 import { JwtStrategy } from './jwt.strategy';
-import { variables } from 'src/app/config';
-import { EmailModule } from 'src/modules/email/email.module';
+import { variables } from '../../app/config';
+import { EmailModule } from '../email/email.module';
 
 const ONE_DAY = 86400;
 
@@ -21,7 +21,7 @@ const ONE_DAY = 86400;
     JwtModule.register({
       secret: variables.JWT_SECRET,
       signOptions: {
-        expiresIn: ONE_DAY, // 1 day
+        expiresIn: ONE_DAY,
       },
     }),
   ],

@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 
 import { EmailService } from './email.service';
-import { variables } from 'src/app/config';
+import { variables } from '../../app/config';
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import * as bycrypt from 'bcrypt';
 
-import { PasswordError } from 'src/app/constants/service-response';
+import { PasswordError } from '../../app/constants/service-response';
 
 @Injectable()
 export class PasswordService {

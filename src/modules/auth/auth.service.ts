@@ -9,12 +9,12 @@ import { JwtService } from '@nestjs/jwt';
 import { SigninDto, SignupDto, UserDto, TokenDto, SendUrlDto } from './dto';
 import { JwtPayload } from './auth.interface';
 import { SigninResponseDto } from './dto/signin.dto';
-import { AuthError, EmailResponse } from 'src/app/constants/service-response';
+import { AuthError, EmailResponse } from '../../app/constants/service-response';
 import { PasswordResetDto } from './dto/password-reset.dto';
-import { UsersService } from 'src/modules/users/users.service';
+import { UsersService } from '../users/users.service';
 import { TokenUrlService } from './token-url.service';
 import { PasswordService } from './password.service';
-import { IUser } from 'src/modules/users/users.interface';
+import { IUser } from '../users/users.interface';
 
 @Injectable()
 export class AuthService {

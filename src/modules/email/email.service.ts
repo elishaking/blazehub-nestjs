@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 
 import { FeedbackMailData, IMail } from './email.interface';
-import { variables } from 'src/app/config';
-import { IUser } from 'src/modules/users/users.interface';
-import { UserDto } from 'src/modules/auth/dto';
+import { variables } from '../../app/config';
+import { IUser } from '../users/users.interface';
+import { UserDto } from '../auth/dto';
 
 @Injectable()
 export class EmailService {

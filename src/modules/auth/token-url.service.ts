@@ -4,9 +4,9 @@ import * as app from 'firebase/app';
 import 'firebase/database';
 
 import { variables } from '../../app/config';
-import { IUser } from 'src/modules/users/users.interface';
-import { EmailService } from 'src/modules/email/email.service';
-import { UrlError } from 'src/app/constants/service-response';
+import { IUser } from '../users/users.interface';
+import { EmailService } from '../email/email.service';
+import { UrlError } from '../../app/constants/service-response';
 
 @Injectable()
 export class TokenUrlService {

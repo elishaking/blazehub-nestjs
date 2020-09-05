@@ -3,8 +3,8 @@ import * as app from 'firebase/app';
 import 'firebase/database';
 
 import { CreateFriendDto, InviteFriendsDto } from './dto';
-import { UserDto } from 'src/modules/auth/dto';
-import { EmailService } from 'src/modules/email/email.service';
+import { UserDto } from '../auth/dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class FriendsService {
