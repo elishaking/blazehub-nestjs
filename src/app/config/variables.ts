@@ -17,7 +17,6 @@ interface Variables {
   FIREBASE_APP_ID?: string;
   FIREBASE_MEASUREMENT_ID?: string;
 
-  SECRET_OR_KEY?: string;
   JWT_SECRET?: string;
 
   REDIS_PORT?: number;
@@ -51,7 +50,6 @@ export const variables: Variables = {
   FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
   FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
 
-  SECRET_OR_KEY: process.env.SECRET_OR_KEY,
   JWT_SECRET: process.env.JWT_SECRET,
 
   REDIS_PORT: parseInt(process.env.REDIS_PORT as string),

@@ -55,4 +55,4 @@ $ yarn test:e2e
 $ yarn test:cov
 ```
 
-- Checkout `package.json` for other helpful scripts.
+- Checkout [package.json](package.json) for other helpful scripts.

@@ -1,0 +1,40 @@
+name: DEV
+
+on: [push]
+
+jobs:
+  ci:
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install packages
+        run: yarn install
+
+      - name: Run tests
+        run: yarn test
+        env:
+          CI: true
+          FIREBASE_API_KEY: ${{secrets.FIREBASE_API_KEY}}
+          FIREBASE_AUTH_DOMAIN: ${{secrets.FIREBASE_AUTH_DOMAIN}}
+          FIREBASE_DATABASE_URL: ${{secrets.FIREBASE_DATABASE_URL}}
+          FIREBASE_PROJECT_ID: ${{secrets.FIREBASE_PROJECT_ID}}
+          FIREBASE_STORAGE_BUCKET: ${{secrets.FIREBASE_STORAGE_BUCKET}}
+          FIREBASE_MESSEGING_SENDER_ID: ${{secrets.FIREBASE_MESSEGING_SENDER_ID}}
+          FIREBASE_APP_ID: ${{secrets.FIREBASE_APP_ID}}
+          FIREBASE_MEASUREMENT_ID: ${{secrets.FIREBASE_MEASUREMENT_ID}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          SENDGRID_API_KEY: ${{secrets.SENDGRID_API_KEY}}
+          EMAIL: ${{secrets.EMAIL}}
+          EMAIL_SERVICE: ${{secrets.EMAIL_SERVICE}}
+          EMAIL_PASSWORD: ${{secrets.EMAIL_PASSWORD}}
+          FEEDBACK_MAIL: ${{secrets.FEEDBACK_MAIL}}
+          FRONTEND_URL: ${{secrets.FRONTEND_URL}}
